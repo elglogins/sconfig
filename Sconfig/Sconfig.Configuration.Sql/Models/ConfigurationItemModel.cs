@@ -1,9 +1,12 @@
 ﻿using Sconfig.Interfaces.Models;
 using System;
+using NPoco;
 
 namespace Sconfig.Configuration.Sql.Models
 {
-    public class ConfigurationItemModel : IConfigurationItemModel
+    [TableName("ConfigurationItem")]
+    [PrimaryKey("Id")]
+    class ConfigurationItemModel : IConfigurationItemModel
     {
         public string Id { get; set; }
         public string Value { get; set; }

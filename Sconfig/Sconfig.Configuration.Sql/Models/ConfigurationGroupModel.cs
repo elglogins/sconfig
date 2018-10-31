@@ -1,9 +1,12 @@
-﻿using Sconfig.Interfaces.Models;
+﻿using NPoco;
+using Sconfig.Interfaces.Models;
 using System;
 
 namespace Sconfig.Configuration.Sql.Models
 {
-    public class ConfigurationGroupModel : IConfigurationGroupModel
+    [TableName("ConfigurationGroup")]
+    [PrimaryKey("Id")]
+    class ConfigurationGroupModel : IConfigurationGroupModel
     {
         public string Id { get; set; }
         public string Name { get; set; }

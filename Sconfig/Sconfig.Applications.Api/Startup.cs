@@ -22,7 +22,10 @@ namespace Sconfig.Applications.Api
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddSConfigSqlConfiguration(new SconfigSqlConfiguration());
+            services.AddSConfigSqlConfiguration(new SconfigSqlConfiguration()
+            {
+                ConnectionString = Configuration.GetConnectionString("ConfigurationConnection")
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
