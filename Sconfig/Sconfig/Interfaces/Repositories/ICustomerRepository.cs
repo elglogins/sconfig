@@ -1,6 +1,8 @@
-﻿namespace Sconfig.Interfaces.Repositories
+﻿using Sconfig.Interfaces.Models;
+
+namespace Sconfig.Interfaces.Repositories
 {
-    public interface ICustomerRepository
+    public interface ICustomerRepository : IRepo<ICustomerModel>
     {
     }
 }

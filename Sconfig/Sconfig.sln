@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configura
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{A5F85F6E-5E86-41B7-938D-7F8496809573}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sconfig.Applications.Api", "Sconfig.Applications.Api\Sconfig.Applications.Api.csproj", "{3367E982-88A7-4A6E-B2A4-5DA3EDBC5E9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sconfig.Applications.Api", "Sconfig.Applications.Api\Sconfig.Applications.Api.csproj", "{3367E982-88A7-4A6E-B2A4-5DA3EDBC5E9F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

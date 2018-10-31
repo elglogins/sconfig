@@ -1,8 +1,8 @@
-﻿using Sconfig.Interfaces.Models.Descriptors;
+using Sconfig.Interfaces.Models.Descriptors;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Sconfig.Configuration.Sql.Interfaces.Repositories
+namespace Sconfig.Interfaces.Repositories
 {
     public interface IRepo<T>
             where T : IStringKeyEntity

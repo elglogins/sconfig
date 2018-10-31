@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Sconfig.Interfaces.Models;
 
 namespace Sconfig.Interfaces.Repositories
 {
-    class IConfigurationGroupRepository
+    public interface IConfigurationGroupRepository : IRepo<IConfigurationGroupModel>
     {
     }
 }

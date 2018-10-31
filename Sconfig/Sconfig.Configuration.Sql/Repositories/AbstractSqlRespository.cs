@@ -1,7 +1,7 @@
 ﻿using NPoco;
 using Sconfig.Configuration.Sql.Interfaces;
-using Sconfig.Configuration.Sql.Interfaces.Repositories;
 using Sconfig.Interfaces.Models.Descriptors;
+using Sconfig.Interfaces.Repositories;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
