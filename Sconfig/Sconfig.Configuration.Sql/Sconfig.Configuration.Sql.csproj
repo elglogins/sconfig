@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sconfig\Sconfig.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NPoco" Version="3.9.4" />
+  </ItemGroup>
+
+</Project>
