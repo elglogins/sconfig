@@ -9,6 +9,7 @@ namespace Sconfig.Extensions
         public static void AddSConfig(this IServiceCollection collection)
         {
             collection.AddTransient<ICustomerService, CustomerService>();
+            collection.AddTransient<IConfigurationGroupService, ConfigurationGroupService>();
         }
     }
 }

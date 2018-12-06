@@ -5,8 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="ConfigurationGroup\Reads\" />
-    <Folder Include="ConfigurationGroup\Writes\" />
     <Folder Include="ConfigurationItem\Writes\" />
     <Folder Include="ConfigurationItem\Reads\" />
   </ItemGroup>

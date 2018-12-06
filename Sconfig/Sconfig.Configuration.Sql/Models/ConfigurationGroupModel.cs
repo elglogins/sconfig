@@ -5,7 +5,7 @@ using System;
 namespace Sconfig.Configuration.Sql.Models
 {
     [TableName("ConfigurationGroup")]
-    [PrimaryKey("Id")]
+    [PrimaryKey("Id", AutoIncrement = false)]
     class ConfigurationGroupModel : IConfigurationGroupModel
     {
         public string Id { get; set; }
