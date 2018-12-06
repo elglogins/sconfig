@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sconfig.Configuration.Sql.Extensions;
 using Sconfig.Configuration.Sql.Models;
+using Sconfig.Extensions;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Sconfig.Applications.Api
@@ -22,11 +23,18 @@ namespace Sconfig.Applications.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddSConfig();
 
+            // if to use sql
             services.AddSConfigSqlConfiguration(new SconfigSqlConfiguration()
             {
                 ConnectionString = Configuration.GetConnectionString("ConfigurationConnection")
             });
+            
+            // if to store users in sql
+            services.AddSConfigSqlCustomers();
+            // if to store configuration in sql
+            services.AddSConfigSqlConfiguration();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>

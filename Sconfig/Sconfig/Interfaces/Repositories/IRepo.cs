@@ -13,6 +13,6 @@ namespace Sconfig.Interfaces.Repositories
         Task<IEnumerable<T>> GetByIds(string[] ids);
         Task Delete(string id);
         Task<IEnumerable<T>> GetAll();
-        void Save(T obj);
+        T Save(T obj);
     }
 }

@@ -1,4 +1,5 @@
-﻿using NPoco;
+﻿using System;
+using NPoco;
 using Sconfig.Configuration.Sql.Interfaces;
 using Sconfig.Interfaces.Models.Descriptors;
 using Sconfig.Interfaces.Repositories;
@@ -54,8 +55,9 @@ namespace Sconfig.Configuration.Sql.Repositories
         {
             using (var db = GetClient())
             {
-                var res = await db.InsertAsync(TableName, PrimaryKey, (TK)obj);
-                return (T)res;
+                var o = (TK)obj;
+                await db.InsertAsync(TableName, PrimaryKey, false, o);
+                return obj;
             }
         }
 
@@ -67,11 +69,13 @@ namespace Sconfig.Configuration.Sql.Repositories
             }
         }
 
-        public void Save(T obj)
+        public T Save(T obj)
         {
             using (var db = GetClient())
             {
-                db.Save((TK)obj);
+                var o = (TK)obj;
+                db.Save(o);
+                return o;
             }
         }
 

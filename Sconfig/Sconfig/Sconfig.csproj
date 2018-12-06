@@ -4,4 +4,17 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Contracts\ConfigurationItem\" />
+    <Folder Include="Contracts\ConfigurationGroup\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sconfig.Contracts.Customer\Sconfig.Contracts.Customer.csproj" />
+  </ItemGroup>
+
 </Project>
