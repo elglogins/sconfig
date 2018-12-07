@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Factories\ConfigurationGroupFactory.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Sconfig\Sconfig.csproj" />
   </ItemGroup>
 

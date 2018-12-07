@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Interfaces\Factories\IConfigurationGroupFactory.cs" />
+    <Compile Remove="Interfaces\Services\IConfigurationGroupService.cs" />
+    <Compile Remove="Services\ConfigurationGroupService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Contracts\ConfigurationItem\" />
     <Folder Include="Contracts\ConfigurationGroup\" />
   </ItemGroup>

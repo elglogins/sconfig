@@ -25,7 +25,7 @@ namespace Sconfig.Configuration.Sql.Extensions
             collection.AddSingleton<IConfigurationItemRepository, ConfigurationItemRepository>();
             collection.AddSingleton<IConfigurationGroupRepository, ConfigurationGroupRepository>();
 
-            collection.AddTransient<IConfigurationGroupFactory, ConfigurationGroupFactory>();
+            //collection.AddTransient<IConfigurationGroupFactory, ConfigurationGroupFactory>();
         }
     }
 }
