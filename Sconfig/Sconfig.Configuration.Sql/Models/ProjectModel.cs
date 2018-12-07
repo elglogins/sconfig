@@ -4,13 +4,13 @@ using System;
 
 namespace Sconfig.Configuration.Sql.Models
 {
-    [TableName("Customer")]
+    [TableName("Project")]
     [PrimaryKey("Id", AutoIncrement = false)]
-    class CustomerModel : ICustomerModel
+    class ProjectModel : IProjectModel
     {
-        public string Id { get; set; }
         public string Name { get; set; }
-        public bool Active { get; set; }
         public DateTime CreatedOn { get; set; }
+        public string Id { get; set; }
+        public string CustomerId { get; set; }
     }
 }

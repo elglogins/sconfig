@@ -2,6 +2,6 @@
 {
     public interface IGroupableEntity
     {
-        string ParentGroupId { get; set; }
+        string ParentId { get; set; }
     }
 }
