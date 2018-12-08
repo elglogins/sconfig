@@ -67,5 +67,18 @@ namespace Sconfig.Services
                 Active = model.Active
             };
         }
+
+        public async Task<CustomerContract> Disable(string id)
+        {
+            if (String.IsNullOrWhiteSpace(id))
+                throw new ArgumentNullException(nameof(id));
+
+            var customer = await _customerRepository.Get(id);
+            if (customer == null)
+                throw new ValidationCodeException(CustomerValidationCode.CUSTOMER_DOES_NOT_EXIST);
+
+            customer.Active = false;
+            return Map(_customerRepository.Save(customer));
+        }
     }
 }

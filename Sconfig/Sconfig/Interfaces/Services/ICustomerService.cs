@@ -9,5 +9,7 @@ namespace Sconfig.Interfaces.Services
         Task<CustomerContract> Get(string id);
 
         Task<CustomerContract> Create(CreateCustomerContract contract);
+
+        Task<CustomerContract> Disable(string id);
     }
 }

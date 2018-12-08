@@ -39,6 +39,7 @@ namespace Sconfig.Configuration.Sql.Tests
                .Setup(_ => _.InitCustomerModel())
                .Returns(new CustomerModel());
 
+            // reads
             var customerRepositoryMock = new Mock<ICustomerRepository>();
             customerRepositoryMock
                .Setup(_ => _.Get(It.Is<string>(s => s == _storedCustomerModel.Id)))
@@ -48,15 +49,20 @@ namespace Sconfig.Configuration.Sql.Tests
              .Setup(_ => _.GetByName(It.Is<string>(s => s == _storedCustomerModel.Name)))
              .Returns(Task.FromResult(_storedCustomerModel));
 
+            // writes
             customerRepositoryMock
                .Setup(_ => _.Insert(It.IsAny<ICustomerModel>()))
                .Returns<ICustomerModel>(x => Task.FromResult(x));
+
+            customerRepositoryMock
+               .Setup(_ => _.Save(It.IsAny<ICustomerModel>()))
+               .Returns<ICustomerModel>(x => x);
 
             _customerService = new CustomerService(customerRepositoryMock.Object, customerFactoryMock.Object);
         }
 
         [Fact]
-        public void GetExistingCustomer()
+        public void GetExisting()
         {
             var result = _customerService.Get(_storedCustomerModel.Id).Result;
 
@@ -124,6 +130,30 @@ namespace Sconfig.Configuration.Sql.Tests
 
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => _customerService.Create(contract));
             Assert.Equal(CustomerValidationCode.INVALID_CUSTOMER_NAME.ToString(), exception.Message);
+        }
+
+        [Fact]
+        public async Task Disable()
+        {
+            var result = await _customerService.Disable(_storedCustomerModel.Id);
+            Assert.NotNull(result);
+            Assert.False(result.Active);
+        }
+
+        [Fact]
+        public async Task DisableNotExisting()
+        {
+            var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => _customerService.Disable("NOT-EXISTING-CUSTOMER-ID"));
+            Assert.Equal(CustomerValidationCode.CUSTOMER_DOES_NOT_EXIST.ToString(), exception.Message);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task DisableWithInvalidId(string id)
+        {
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _customerService.Disable(id));
         }
     }
 }
