@@ -29,7 +29,7 @@ namespace Sconfig.Services
 
             // validate name
             if (String.IsNullOrWhiteSpace(contract.Name)
-                || contract.Name.Length > 30)
+                || contract.Name.Length > 50)
                 throw new ValidationCodeException(ProjectValidationCode.INVALID_PROJECT_NAME);
 
             // ensure that name is not used
