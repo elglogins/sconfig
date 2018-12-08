@@ -1,7 +1,9 @@
 ﻿using NPoco;
 using Sconfig.Interfaces.Models;
 using System;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Sconfig.Configuration.Sql.Tests")]
 namespace Sconfig.Configuration.Sql.Models
 {
     [TableName("Customer")]

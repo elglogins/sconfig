@@ -6,10 +6,13 @@ using Sconfig.Interfaces.Repositories;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Sconfig.Tests")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace Sconfig.Configuration.Sql.Repositories
 {
-    abstract class AbstractSqlRespository<T, TK> : SqlRepositoryConnection, IRepo<T>
+    internal abstract class AbstractSqlRespository<T, TK> : SqlRepositoryConnection, IRepo<T>
         where T : IStringKeyEntity
         where TK : class, T
     {
@@ -27,7 +30,7 @@ namespace Sconfig.Configuration.Sql.Repositories
             }
         }
 
-        public async Task<T> Get(string id)
+        public virtual async Task<T> Get(string id)
         {
             using (var db = GetClient())
             {

@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Sconfig.Contracts.Configuration\Sconfig.Contracts.Configuration.csproj" />
     <ProjectReference Include="..\Sconfig.Contracts.Customer\Sconfig.Contracts.Customer.csproj" />
+    <ProjectReference Include="..\Sconfig.Contracts.Project\Sconfig.Contracts.Project.csproj" />
   </ItemGroup>
 
 </Project>
