@@ -12,7 +12,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Sconfig.Configuration.Sql.Tests
+namespace Sconfig.Configuration.Sql.Tests.Customer
 {
     public class CustomerServiceTests
     {

@@ -2,7 +2,7 @@
 using Sconfig.Interfaces.Factories;
 using Xunit;
 
-namespace Sconfig.Configuration.Sql.Tests
+namespace Sconfig.Configuration.Sql.Tests.Customer
 {
     public class CustomerFactoryTests
     {
