@@ -8,6 +8,6 @@ namespace Sconfig.Interfaces.Services
     {
         Task<ProjectContract> Get(string id, string customerId);
 
-        Task<ProjectContract> Create(CreateProjectContract contract);
+        Task<ProjectContract> Create(CreateProjectContract contract, string customerId);
     }
 }
