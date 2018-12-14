@@ -4,6 +4,12 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Interfaces\Factories\IConfigurationGroupFactory.cs" />
     <Compile Remove="Interfaces\Services\IConfigurationGroupService.cs" />
@@ -22,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Sconfig.Contracts.Configuration\Sconfig.Contracts.Configuration.csproj" />
     <ProjectReference Include="..\Sconfig.Contracts.Customer\Sconfig.Contracts.Customer.csproj" />
+    <ProjectReference Include="..\Sconfig.Contracts.Environment\Sconfig.Contracts.Environment.csproj" />
     <ProjectReference Include="..\Sconfig.Contracts.Project\Sconfig.Contracts.Project.csproj" />
   </ItemGroup>
 

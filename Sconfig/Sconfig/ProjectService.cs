@@ -1,4 +1,6 @@
-﻿using Sconfig.Contracts.Project.Enums;
+﻿using System;
+using System.Threading.Tasks;
+using Sconfig.Contracts.Project.Enums;
 using Sconfig.Contracts.Project.Reads;
 using Sconfig.Contracts.Project.Writes;
 using Sconfig.Exceptions;
@@ -6,8 +8,6 @@ using Sconfig.Interfaces.Factories;
 using Sconfig.Interfaces.Models;
 using Sconfig.Interfaces.Repositories;
 using Sconfig.Interfaces.Services;
-using System;
-using System.Threading.Tasks;
 
 namespace Sconfig.Services
 {
