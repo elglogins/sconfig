@@ -7,11 +7,12 @@ using Sconfig.Interfaces.Models;
 using Sconfig.Interfaces.Repositories;
 using Sconfig.Interfaces.Services;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Sconfig.Services
 {
-    public class CustomerService : ICustomerService
+    class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly ICustomerFactory _customerFactory;

@@ -11,7 +11,7 @@ using Sconfig.Interfaces.Services;
 
 namespace Sconfig.Services
 {
-    public class ProjectService : IProjectService
+    class ProjectService : IProjectService
     {
         private readonly IProjectFactory _projectFactory;
         private readonly IProjectRepository _projectRepository;

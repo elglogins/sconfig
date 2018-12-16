@@ -1,15 +1,11 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Reflection;
+using System.Threading.Tasks;
 using NPoco;
 using Sconfig.Configuration.Sql.Interfaces;
 using Sconfig.Interfaces.Models.Descriptors;
 using Sconfig.Interfaces.Repositories;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Sconfig.Tests")]
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace Sconfig.Configuration.Sql.Repositories
 {
     internal abstract class AbstractSqlRespository<T, TK> : SqlRepositoryConnection, IRepo<T>

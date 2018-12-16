@@ -1,4 +1,6 @@
-﻿using Sconfig.Contracts.Environment.Enums;
+﻿using System;
+using System.Threading.Tasks;
+using Sconfig.Contracts.Environment.Enums;
 using Sconfig.Contracts.Environment.Reads;
 using Sconfig.Contracts.Environment.Writes;
 using Sconfig.Exceptions;
@@ -6,14 +8,10 @@ using Sconfig.Interfaces.Factories;
 using Sconfig.Interfaces.Models;
 using Sconfig.Interfaces.Repositories;
 using Sconfig.Interfaces.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sconfig.Services
 {
-    public class EnvironmentService : IEnvironmentService
+    class EnvironmentService : IEnvironmentService
     {
         private readonly IEnvironmentRepository _environmentRepository;
         private readonly IEnvironmentFactory _environmentFactory;
