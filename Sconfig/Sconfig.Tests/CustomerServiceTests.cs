@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Moq;
 using Sconfig.Contracts.Customer;
 using Sconfig.Contracts.Customer.Enums;
+using Sconfig.Contracts.Customer.Writes;
 using Sconfig.Exceptions;
 using Sconfig.Interfaces.Factories;
 using Sconfig.Interfaces.Models;
@@ -39,7 +40,7 @@ namespace Sconfig.Tests
                .Setup(_ => _.InitCustomerModel())
                .Returns(new CustomerTestModel());
 
-            // reads
+            // readsH
             var customerRepositoryMock = new Mock<ICustomerRepository>();
             customerRepositoryMock
                .Setup(_ => _.Get(It.Is<string>(s => s == _storedCustomerModel.Id)))
@@ -154,6 +155,65 @@ namespace Sconfig.Tests
         public async Task DisableWithInvalidId(string id)
         {
             await Assert.ThrowsAsync<ArgumentNullException>(() => _customerService.Disable(id));
+        }
+
+        [Fact]
+        public async Task Enable()
+        {
+            var result = await _customerService.Enable(_storedCustomerModel.Id);
+            Assert.NotNull(result);
+            Assert.True(result.Active);
+        }
+
+        [Fact]
+        public async Task EnableNotExisting()
+        {
+            var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => _customerService.Enable("NOT-EXISTING-CUSTOMER-ID"));
+            Assert.Equal(CustomerValidationCode.CUSTOMER_DOES_NOT_EXIST.ToString(), exception.Message);
+        }
+
+        [Fact]
+        public async Task Edit()
+        {
+            var editContract = new EditCustomerContract()
+            {
+                Id = _storedCustomerModel.Id,
+                Name = "ThisIsNewAndValidName"
+            };
+            var result = await _customerService.Edit(editContract);
+
+            Assert.NotNull(result);
+            Assert.Equal(_storedCustomerModel.Name, result.Name);
+        }
+
+        [Fact]
+        public async Task EditNotExisting()
+        {
+            var contract = new EditCustomerContract()
+            {
+                Id = "NOT-EXISTING-CUSTOMER-ID",
+                Name = "ThisIsNewAndValidName"
+            };
+
+            var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => _customerService.Edit(contract));
+            Assert.Equal(CustomerValidationCode.CUSTOMER_DOES_NOT_EXIST.ToString(), exception.Message);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData("ThisNameIsLongerThanIsAllowed!!")]
+        public async Task EditWithInvalidName(string name)
+        {
+            var contract = new EditCustomerContract()
+            {
+                Name = name,
+                Id = _storedCustomerModel.Id,
+            };
+
+            var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => _customerService.Edit(contract));
+            Assert.Equal(CustomerValidationCode.INVALID_CUSTOMER_NAME.ToString(), exception.Message);
         }
     }
 }
