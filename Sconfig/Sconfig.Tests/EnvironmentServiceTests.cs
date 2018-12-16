@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Moq;
-using Sconfig.Configuration.Sql.Models;
 using Sconfig.Contracts.Environment.Enums;
 using Sconfig.Contracts.Environment.Writes;
-using Sconfig.Contracts.Project.Enums;
 using Sconfig.Exceptions;
 using Sconfig.Interfaces.Factories;
 using Sconfig.Interfaces.Models;
 using Sconfig.Interfaces.Repositories;
 using Sconfig.Interfaces.Services;
 using Sconfig.Services;
+using Sconfig.Tests.Models;
 using Xunit;
 
 namespace Sconfig.Configuration.Sql.Tests.Environment
@@ -28,7 +25,7 @@ namespace Sconfig.Configuration.Sql.Tests.Environment
         public EnvironmentServiceTests()
         {
             // repository entities
-            _storedEnvironmentModel = new EnvironmentModel()
+            _storedEnvironmentModel = new EnvironmentTestModel()
             {
                 CreatedOn = DateTime.Now,
                 Id = "TEST-ENVIRONMENT-1",
@@ -40,7 +37,7 @@ namespace Sconfig.Configuration.Sql.Tests.Environment
             var environmentFactoryMock = new Mock<IEnvironmentFactory>();
             environmentFactoryMock
                .Setup(_ => _.InitEnvironmentModel())
-               .Returns(new EnvironmentModel());
+               .Returns(new EnvironmentTestModel());
 
             // reads
             var environmentRepositoryMock = new Mock<IEnvironmentRepository>();
@@ -49,7 +46,7 @@ namespace Sconfig.Configuration.Sql.Tests.Environment
                .Returns(Task.FromResult(_storedEnvironmentModel));
 
             environmentRepositoryMock
-             .Setup(_ => _.GetByName(It.Is<string>(s => s == _storedEnvironmentModel.Name), 
+             .Setup(_ => _.GetByName(It.Is<string>(s => s == _storedEnvironmentModel.Name),
                 It.Is<string>(s => s == _storedEnvironmentModel.ProjectId)))
              .Returns(Task.FromResult(_storedEnvironmentModel));
 
@@ -76,7 +73,7 @@ namespace Sconfig.Configuration.Sql.Tests.Environment
         }
 
         [Fact]
-        public async Task GetForWrongOwnerProject()
+        public void GetForWrongOwnerProject()
         {
             var result = _environmentService.Get(_storedEnvironmentModel.Id, "NOT-OWNER-PROJECT-ID").Result;
             Assert.Null(result);

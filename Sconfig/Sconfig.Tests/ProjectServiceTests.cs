@@ -1,5 +1,6 @@
-﻿using Moq;
-using Sconfig.Configuration.Sql.Models;
+﻿using System;
+using System.Threading.Tasks;
+using Moq;
 using Sconfig.Contracts.Project.Enums;
 using Sconfig.Contracts.Project.Writes;
 using Sconfig.Exceptions;
@@ -8,8 +9,7 @@ using Sconfig.Interfaces.Models;
 using Sconfig.Interfaces.Repositories;
 using Sconfig.Interfaces.Services;
 using Sconfig.Services;
-using System;
-using System.Threading.Tasks;
+using Sconfig.Tests.Models;
 using Xunit;
 
 namespace Sconfig.Configuration.Sql.Tests.Project
@@ -25,7 +25,7 @@ namespace Sconfig.Configuration.Sql.Tests.Project
         public ProjectServiceTests()
         {
             // repository entities
-            _storedProjectModel = new ProjectModel()
+            _storedProjectModel = new ProjectTestModel()
             {
                 CreatedOn = DateTime.Now,
                 Id = "TEST-PROJECT-1",
@@ -37,7 +37,7 @@ namespace Sconfig.Configuration.Sql.Tests.Project
             var projectFactoryMock = new Mock<IProjectFactory>();
             projectFactoryMock
                .Setup(_ => _.InitProjectModel())
-               .Returns(new ProjectModel());
+               .Returns(new ProjectTestModel());
 
             // reads
             var projectRepositoryMock = new Mock<IProjectRepository>();

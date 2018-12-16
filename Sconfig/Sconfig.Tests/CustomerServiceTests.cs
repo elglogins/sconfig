@@ -1,5 +1,6 @@
-﻿using Moq;
-using Sconfig.Configuration.Sql.Models;
+﻿using System;
+using System.Threading.Tasks;
+using Moq;
 using Sconfig.Contracts.Customer;
 using Sconfig.Contracts.Customer.Enums;
 using Sconfig.Exceptions;
@@ -8,11 +9,10 @@ using Sconfig.Interfaces.Models;
 using Sconfig.Interfaces.Repositories;
 using Sconfig.Interfaces.Services;
 using Sconfig.Services;
-using System;
-using System.Threading.Tasks;
+using Sconfig.Tests.Models;
 using Xunit;
 
-namespace Sconfig.Configuration.Sql.Tests.Customer
+namespace Sconfig.Tests
 {
     public class CustomerServiceTests
     {
@@ -25,7 +25,7 @@ namespace Sconfig.Configuration.Sql.Tests.Customer
         public CustomerServiceTests()
         {
             // repository entities
-            _storedCustomerModel = new CustomerModel()
+            _storedCustomerModel = new CustomerTestModel()
             {
                 Active = true,
                 CreatedOn = DateTime.Now,
@@ -37,7 +37,7 @@ namespace Sconfig.Configuration.Sql.Tests.Customer
             var customerFactoryMock = new Mock<ICustomerFactory>();
             customerFactoryMock
                .Setup(_ => _.InitCustomerModel())
-               .Returns(new CustomerModel());
+               .Returns(new CustomerTestModel());
 
             // reads
             var customerRepositoryMock = new Mock<ICustomerRepository>();
