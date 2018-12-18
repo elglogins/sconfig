@@ -186,6 +186,20 @@ namespace Sconfig.Tests
         }
 
         [Fact]
+        public async Task EditAlreadyExistingName()
+        {
+            var contract = new EditProjectContract()
+            {
+                Id = DefaultProjectModel.Id,
+                Name = DefaultProjectModel.Name
+            };
+
+            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object);
+            var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => projectService.Edit(contract, DefaultProjectModel.CustomerId));
+            Assert.Equal(ProjectValidationCode.PROJECT_ALREADY_EXISTS.ToString(), exception.Message);
+        }
+
+        [Fact]
         public async Task EditForInvalidOwner()
         {
             var contract = new EditProjectContract()

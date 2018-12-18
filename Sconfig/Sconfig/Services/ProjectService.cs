@@ -96,6 +96,11 @@ namespace Sconfig.Services
             if (project.CustomerId != customerId)
                 throw new ValidationCodeException(ProjectValidationCode.INVALID_PROJECT_OWNER);
 
+            // ensure that name is unique
+            var existingByName = await _projectRepository.GetByName(contract.Name, customerId);
+            if (existingByName != null)
+                throw new ValidationCodeException(ProjectValidationCode.PROJECT_ALREADY_EXISTS);
+
             project.Name = contract.Name;
             return Map(_projectRepository.Save(project));
         }

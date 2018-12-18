@@ -250,5 +250,19 @@ namespace Sconfig.Tests
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => customerService.Edit(contract));
             Assert.Equal(CustomerValidationCode.INVALID_CUSTOMER_NAME.ToString(), exception.Message);
         }
+
+        [Fact]
+        public async Task EditAlreadyExistingName()
+        {
+            var contract = new EditCustomerContract()
+            {
+                Id = DefaultCustomerModel.Id,
+                Name = DefaultCustomerModel.Name
+            };
+
+            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object);
+            var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => customerService.Edit(contract));
+            Assert.Equal(CustomerValidationCode.CUSTOMER_ALREADY_EXISTS.ToString(), exception.Message);
+        }
     }
 }

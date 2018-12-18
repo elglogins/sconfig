@@ -212,6 +212,20 @@ namespace Sconfig.Tests
             Assert.Equal(EnvironmentValidationCode.INVALID_ENVIRONMENT_PROJECT.ToString(), exception.Message);
         }
 
+        [Fact]
+        public async Task EditAlreadyExistingName()
+        {
+            var contract = new EditEnvironmentContract()
+            {
+                Id = DefaultEnvironmentModel.Id,
+                Name = DefaultEnvironmentModel.Name
+            };
+
+            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
+            var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => environmentService.Edit(contract, DefaultEnvironmentModel.ProjectId));
+            Assert.Equal(EnvironmentValidationCode.ENVIRONMENT_ALREADY_EXISTS.ToString(), exception.Message);
+        }
+
         [Theory]
         [InlineData(null)]
         [InlineData("")]

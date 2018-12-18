@@ -111,6 +111,11 @@ namespace Sconfig.Services
             if (customer == null)
                 throw new ValidationCodeException(CustomerValidationCode.CUSTOMER_DOES_NOT_EXIST);
 
+            // ensure that name is unique
+            var alreadyExistingByName = await _customerRepository.GetByName(contract.Name);
+            if (alreadyExistingByName != null)
+                throw new ValidationCodeException(CustomerValidationCode.CUSTOMER_ALREADY_EXISTS);
+
             customer.Name = contract.Name;
             return Map(_customerRepository.Save(customer));
         }

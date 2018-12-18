@@ -93,6 +93,11 @@ namespace Sconfig.Services
             if (environment.ProjectId != projectId)
                 throw new ValidationCodeException(EnvironmentValidationCode.INVALID_ENVIRONMENT_PROJECT);
 
+            // ensure name is unique
+            var existingByName = await _environmentRepository.GetByName(contract.Name, projectId);
+            if (existingByName != null)
+                throw new ValidationCodeException(EnvironmentValidationCode.ENVIRONMENT_ALREADY_EXISTS);
+
             environment.Name = contract.Name;
             return Map(_environmentRepository.Save(environment));
         }
