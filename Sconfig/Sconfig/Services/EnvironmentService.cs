@@ -16,6 +16,8 @@ namespace Sconfig.Services
         private readonly IEnvironmentRepository _environmentRepository;
         private readonly IEnvironmentFactory _environmentFactory;
 
+        private const int MaxEnvironmentNameLength = 50;
+
         public EnvironmentService(IEnvironmentRepository environmentRepository, IEnvironmentFactory environmentFactory)
         {
             _environmentRepository = environmentRepository;
@@ -29,7 +31,7 @@ namespace Sconfig.Services
 
             // validate name
             if (String.IsNullOrWhiteSpace(contract.Name)
-                || contract.Name.Length > 50)
+                || contract.Name.Length > MaxEnvironmentNameLength)
                 throw new ValidationCodeException(EnvironmentValidationCode.INVALID_ENVIRONMENT_NAME);
 
             // ensure that name is not used
@@ -55,6 +57,46 @@ namespace Sconfig.Services
 
             return Map(model);
         }
+
+        public async Task Delete(string id, string projectId)
+        {
+            if (String.IsNullOrWhiteSpace(id))
+                throw new ArgumentNullException(nameof(id));
+
+            if (String.IsNullOrWhiteSpace(projectId))
+                throw new ArgumentNullException(nameof(projectId));
+
+            var environment = await _environmentRepository.Get(id);
+            if (environment == null)
+                throw new ValidationCodeException(EnvironmentValidationCode.ENVIRONMENT_DOES_NOT_EXIST);
+
+            if (environment.ProjectId != projectId)
+                throw new ValidationCodeException(EnvironmentValidationCode.INVALID_ENVIRONMENT_PROJECT);
+
+            await _environmentRepository.Delete(id);
+        }
+
+        public async Task<EnvironmentContract> Edit(EditEnvironmentContract contract, string projectId)
+        {
+            if (contract == null)
+                throw new ArgumentNullException(nameof(contract));
+
+            // validate name
+            if (String.IsNullOrWhiteSpace(contract.Name)
+                || contract.Name.Length > MaxEnvironmentNameLength)
+                throw new ValidationCodeException(EnvironmentValidationCode.INVALID_ENVIRONMENT_NAME);
+
+            var environment = await _environmentRepository.Get(contract.Id);
+            if (environment == null)
+                throw new ValidationCodeException(EnvironmentValidationCode.ENVIRONMENT_DOES_NOT_EXIST);
+
+            if (environment.ProjectId != projectId)
+                throw new ValidationCodeException(EnvironmentValidationCode.INVALID_ENVIRONMENT_PROJECT);
+
+            environment.Name = contract.Name;
+            return Map(_environmentRepository.Save(environment));
+        }
+
 
         private EnvironmentContract Map(IEnvironmentModel model)
         {

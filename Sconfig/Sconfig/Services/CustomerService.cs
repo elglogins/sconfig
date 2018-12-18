@@ -1,4 +1,6 @@
-﻿using Sconfig.Contracts.Customer;
+﻿using System;
+using System.Threading.Tasks;
+using Sconfig.Contracts.Customer;
 using Sconfig.Contracts.Customer.Enums;
 using Sconfig.Contracts.Customer.Reads;
 using Sconfig.Contracts.Customer.Writes;
@@ -7,9 +9,6 @@ using Sconfig.Interfaces.Factories;
 using Sconfig.Interfaces.Models;
 using Sconfig.Interfaces.Repositories;
 using Sconfig.Interfaces.Services;
-using System;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
 namespace Sconfig.Services
 {
@@ -18,7 +17,7 @@ namespace Sconfig.Services
         private readonly ICustomerRepository _customerRepository;
         private readonly ICustomerFactory _customerFactory;
 
-        private const int CustomerNameLength = 30;
+        private const int MaxCustomerNameLength = 30;
 
         public CustomerService(
             ICustomerRepository customerRepository,
@@ -41,7 +40,7 @@ namespace Sconfig.Services
 
             // validate name
             if (String.IsNullOrWhiteSpace(contract.Name)
-                || contract.Name.Length > CustomerNameLength)
+                || contract.Name.Length > MaxCustomerNameLength)
                 throw new ValidationCodeException(CustomerValidationCode.INVALID_CUSTOMER_NAME);
 
             // ensure that name is not used
@@ -105,7 +104,7 @@ namespace Sconfig.Services
 
             // validate name
             if (String.IsNullOrWhiteSpace(contract.Name)
-                || contract.Name.Length > CustomerNameLength)
+                || contract.Name.Length > MaxCustomerNameLength)
                 throw new ValidationCodeException(CustomerValidationCode.INVALID_CUSTOMER_NAME);
 
             var customer = await _customerRepository.Get(contract.Id);

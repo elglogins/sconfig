@@ -16,7 +16,7 @@ namespace Sconfig.Services
         private readonly IProjectFactory _projectFactory;
         private readonly IProjectRepository _projectRepository;
 
-        private const int ProjectNameLength = 50;
+        private const int MaxProjectNameLength = 50;
 
         public ProjectService(IProjectFactory projectFactory, IProjectRepository projectRepository)
         {
@@ -31,7 +31,7 @@ namespace Sconfig.Services
 
             // validate name
             if (String.IsNullOrWhiteSpace(contract.Name)
-                || contract.Name.Length > ProjectNameLength)
+                || contract.Name.Length > MaxProjectNameLength)
                 throw new ValidationCodeException(ProjectValidationCode.INVALID_PROJECT_NAME);
 
             // ensure that name is not used
@@ -86,7 +86,7 @@ namespace Sconfig.Services
 
             // validate name
             if (String.IsNullOrWhiteSpace(contract.Name)
-                || contract.Name.Length > ProjectNameLength)
+                || contract.Name.Length > MaxProjectNameLength)
                 throw new ValidationCodeException(ProjectValidationCode.INVALID_PROJECT_NAME);
 
             var project = await _projectRepository.Get(contract.Id);

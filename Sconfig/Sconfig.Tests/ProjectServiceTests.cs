@@ -11,7 +11,7 @@ using Sconfig.Services;
 using Sconfig.Tests.Models;
 using Xunit;
 
-namespace Sconfig.Configuration.Sql.Tests.Project
+namespace Sconfig.Tests
 {
     public class ProjectServiceTests
     {

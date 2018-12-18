@@ -9,5 +9,9 @@ namespace Sconfig.Interfaces.Services
         Task<EnvironmentContract> Get(string id, string projectId);
 
         Task<EnvironmentContract> Create(CreateEnvironmentContract contract);
+
+        Task<EnvironmentContract> Edit(EditEnvironmentContract contract, string projectId);
+
+        Task Delete(string projectId, string customerId);
     }
 }
