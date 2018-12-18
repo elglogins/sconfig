@@ -199,13 +199,15 @@ namespace Sconfig.Tests
             Assert.Equal(CustomerValidationCode.CUSTOMER_DOES_NOT_EXIST.ToString(), exception.Message);
         }
 
-        [Fact]
-        public async Task Edit()
+        [Theory]
+        [InlineData("ThisIsNewAndValidName")]
+        [InlineData("ThisIsEdgeValueOfAllowedLength")]
+        public async Task Edit(string name)
         {
             var editContract = new EditCustomerContract()
             {
                 Id = DefaultCustomerModel.Id,
-                Name = "ThisIsNewAndValidName"
+                Name = name
             };
 
             var customerRepositoryMock = DefaultCustomerRepositoryMock;
