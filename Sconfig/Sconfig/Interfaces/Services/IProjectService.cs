@@ -9,5 +9,9 @@ namespace Sconfig.Interfaces.Services
         Task<ProjectContract> Get(string id, string customerId);
 
         Task<ProjectContract> Create(CreateProjectContract contract, string customerId);
+
+        Task Delete(string projectId, string customerId);
+
+        Task<ProjectContract> Edit(EditProjectContract contract, string customerId);
     }
 }

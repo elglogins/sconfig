@@ -16,6 +16,8 @@ namespace Sconfig.Services
         private readonly IProjectFactory _projectFactory;
         private readonly IProjectRepository _projectRepository;
 
+        private const int ProjectNameLength = 50;
+
         public ProjectService(IProjectFactory projectFactory, IProjectRepository projectRepository)
         {
             _projectFactory = projectFactory;
@@ -29,7 +31,7 @@ namespace Sconfig.Services
 
             // validate name
             if (String.IsNullOrWhiteSpace(contract.Name)
-                || contract.Name.Length > 50)
+                || contract.Name.Length > ProjectNameLength)
                 throw new ValidationCodeException(ProjectValidationCode.INVALID_PROJECT_NAME);
 
             // ensure that name is not used
@@ -75,6 +77,45 @@ namespace Sconfig.Services
                 Name = model.Name,
                 CreatedOn = model.CreatedOn
             };
+        }
+
+        public async Task<ProjectContract> Edit(EditProjectContract contract, string customerId)
+        {
+            if (contract == null)
+                throw new ArgumentNullException(nameof(contract));
+
+            // validate name
+            if (String.IsNullOrWhiteSpace(contract.Name)
+                || contract.Name.Length > ProjectNameLength)
+                throw new ValidationCodeException(ProjectValidationCode.INVALID_PROJECT_NAME);
+
+            var project = await _projectRepository.Get(contract.Id);
+            if (project == null)
+                throw new ValidationCodeException(ProjectValidationCode.PROJECT_DOES_NOT_EXIST);
+
+            if (project.CustomerId != customerId)
+                throw new ValidationCodeException(ProjectValidationCode.INVALID_PROJECT_OWNER);
+
+            project.Name = contract.Name;
+            return Map(_projectRepository.Save(project));
+        }
+
+        public async Task Delete(string projectId, string customerId)
+        {
+            if (String.IsNullOrWhiteSpace(projectId))
+                throw new ArgumentNullException(nameof(projectId));
+
+            if (String.IsNullOrWhiteSpace(customerId))
+                throw new ArgumentNullException(nameof(customerId));
+
+            var project = await _projectRepository.Get(projectId);
+            if (project == null)
+                throw new ValidationCodeException(ProjectValidationCode.PROJECT_DOES_NOT_EXIST);
+
+            if (project.CustomerId != customerId)
+                throw new ValidationCodeException(ProjectValidationCode.INVALID_PROJECT_OWNER);
+
+            await _projectRepository.Delete(projectId);
         }
     }
 }
