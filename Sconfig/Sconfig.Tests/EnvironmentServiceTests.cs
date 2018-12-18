@@ -199,7 +199,7 @@ namespace Sconfig.Tests
         }
 
         [Fact]
-        public async Task EditForInvalidProject()
+        public async Task EditForInvalid()
         {
             var contract = new EditEnvironmentContract()
             {

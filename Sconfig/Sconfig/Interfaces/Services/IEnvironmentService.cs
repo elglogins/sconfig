@@ -12,6 +12,6 @@ namespace Sconfig.Interfaces.Services
 
         Task<EnvironmentContract> Edit(EditEnvironmentContract contract, string projectId);
 
-        Task Delete(string projectId, string customerId);
+        Task Delete(string environmentId, string projectId);
     }
 }
