@@ -21,12 +21,22 @@ namespace Sconfig.Configuration.Sql.Repositories
             }
         }
 
+        public Task<IConfigurationGroupModel> GetByNameAndByProject(string name, string projectId)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public async Task<IEnumerable<IConfigurationGroupModel>> GetByParentGroup(string parentGroupId)
         {
             using (var db = GetClient())
             {
                 return await db.FetchAsync<ConfigurationGroupModel>($"SELECT * FROM [{TableName}] WHERE [ParentGroupId] = @0", parentGroupId);
             }
+        }
+
+        public Task<IEnumerable<IConfigurationGroupModel>> GetRootLevelByProject(string projectId)
+        {
+            throw new System.NotImplementedException();
         }
 
         public async Task<IEnumerable<IConfigurationGroupModel>> GetWithoutParentGroupAndByCustomer(string customerId)
