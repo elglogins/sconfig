@@ -10,7 +10,7 @@ namespace Sconfig.Interfaces.Services
 
         Task<ApplicationContract> Create(CreateApplicationContract contract);
 
-        Task<ApplicationContract> Delete(string id, string projectId);
+        Task Delete(string id, string projectId);
 
         Task<ApplicationContract> Edit(EditApplicationContract contract, string projectId);
     }
