@@ -54,6 +54,11 @@ namespace Sconfig.Services
                 || contract.Name.Length > MaxConfigurationGroupNameLength)
                 throw new ValidationCodeException(ConfigurationGroupValidationCodes.INVALID_CONFIGURATION_GROUP_NAME);
 
+            // ensure that name is unique
+            var existingByName = await _configurationGroupRepository.GetByNameAndByProject(contract.Name, contract.ProjectId);
+            if (existingByName != null)
+                throw new ValidationCodeException(ConfigurationGroupValidationCodes.CONFIGURATION_GROUP_ALREADY_EXISTS);
+
             int? sortingIndex = null;
 
             // validate parent
@@ -96,8 +101,7 @@ namespace Sconfig.Services
             if (group.ProjectId != projectId)
                 throw new ValidationCodeException(ConfigurationGroupValidationCodes.INVALID_CONFIGURATION_GROUP_PROJECT);
 
-            if (!String.IsNullOrWhiteSpace(applicationId)
-              && group.ApplicationId != applicationId)
+            if (group.ApplicationId != applicationId)
                 throw new ValidationCodeException(ConfigurationGroupValidationCodes.INVALID_CONFIGURATION_GROUP_APPLICATION);
 
             await _configurationGroupRepository.Delete(group.Id);
@@ -124,7 +128,8 @@ namespace Sconfig.Services
                 throw new ValidationCodeException(ConfigurationGroupValidationCodes.INVALID_CONFIGURATION_GROUP_PROJECT);
 
             if (!String.IsNullOrWhiteSpace(contract.ApplicationId)
-              && group.ApplicationId != contract.ApplicationId)
+                && !String.IsNullOrWhiteSpace(group.ApplicationId)
+                && group.ApplicationId != contract.ApplicationId)
                 throw new ValidationCodeException(ConfigurationGroupValidationCodes.INVALID_CONFIGURATION_GROUP_APPLICATION);
 
             // ensure that name is unique
@@ -153,57 +158,11 @@ namespace Sconfig.Services
             if (group.ProjectId != projectId)
                 return null;
 
-            if (!String.IsNullOrWhiteSpace(applicationId)
-                && group.ApplicationId != applicationId)
+            if (group.ApplicationId != applicationId)
                 return null;
 
             return Map(group);
         }
-
-        //// TODO: customer id to be set through api key on request (and perform validation)
-        //public async Task<ConfigurationGroupContract> Create(CreateConfigurationGroupContract contract, string customerId)
-        //{
-        //    // ensure that there is no dublication of group names for customer
-        //    var existing = await _configurationGroupRepository.GetByNameAndByCustomer(contract.Name, customerId);
-        //    if (existing != null)
-        //        throw new Exception("Configuration group with this name already exists for customer");
-
-        //    // sorting index of configuration group
-        //    int? sortIndex;
-
-        //    // validate that parent is valid
-        //    if (!String.IsNullOrEmpty(contract.ParentGroupId))
-        //    {
-        //        var parent = await _configurationGroupRepository.Get(contract.ParentGroupId);
-        //        if (parent == null)
-        //            throw new Exception("Parent configuration group does not exist");
-
-        //        // if parent configuration group belongs to other customer
-        //        if (parent.CustomerId != customerId)
-        //            throw new Exception("Parent configuration group belogns to another customer");
-
-        //        var parentsChildrenGroups = await _configurationGroupRepository.GetByParentGroupAndByCustomer(parent.Id, customerId);
-        //        sortIndex = parentsChildrenGroups.Count();
-        //    }
-        //    else
-        //    {
-        //        // sort index based on count of groups that customers has without parent group id
-        //        var customersRootGroups = await _configurationGroupRepository.GetWithoutParentGroupAndByCustomer(customerId);
-        //        sortIndex = customersRootGroups.Count();
-        //    }
-
-
-        //    var model = _configurationGroupFactory.InitConfigurationGroupModel();
-        //    model.Id = Guid.NewGuid().ToString();
-        //    model.CreatedOn = DateTime.Now;
-        //    model.CustomerId = customerId;
-        //    model.ParentGroupId = String.IsNullOrEmpty(contract.ParentGroupId) ? null : contract.ParentGroupId;
-        //    model.Name = contract.Name;
-        //    model.SortingIndex = sortIndex.Value;
-
-        //    var result = await _configurationGroupRepository.Insert(model);
-        //    return Map(result);
-        //}
 
         private ConfigurationGroupContract Map(IConfigurationGroupModel model)
         {
