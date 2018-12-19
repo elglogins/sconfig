@@ -21,11 +21,11 @@ namespace Sconfig.Configuration.Sql.Repositories
             }
         }
 
-        public async Task<IEnumerable<IConfigurationGroupModel>> GetByParentGroupAndByCustomer(string parentGroupId, string customerId)
+        public async Task<IEnumerable<IConfigurationGroupModel>> GetByParentGroup(string parentGroupId)
         {
             using (var db = GetClient())
             {
-                return await db.FetchAsync<ConfigurationGroupModel>($"SELECT * FROM [{TableName}] WHERE [ParentGroupId] = @0 AND [CustomerId] = @1", parentGroupId, customerId);
+                return await db.FetchAsync<ConfigurationGroupModel>($"SELECT * FROM [{TableName}] WHERE [ParentGroupId] = @0", parentGroupId);
             }
         }
 

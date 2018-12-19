@@ -6,6 +6,12 @@ namespace Sconfig.Interfaces.Services
 {
     public interface IConfigurationGroupService
     {
-        Task<ConfigurationGroupContract> Create(CreateConfigurationGroupContract contract, string customerId);
+        Task<ConfigurationGroupContract> Create(CreateConfigurationGroupContract contract);
+
+        Task<ConfigurationGroupContract> Get(string id, string projectId, string applicationId);
+
+        Task Delete(string id, string projectId, string applicationId);
+
+        Task<ConfigurationGroupContract> Edit(EditConfigurationGroupContract contract);
     }
 }

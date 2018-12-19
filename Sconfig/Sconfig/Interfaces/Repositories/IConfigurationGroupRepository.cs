@@ -6,10 +6,10 @@ namespace Sconfig.Interfaces.Repositories
 {
     public interface IConfigurationGroupRepository : IRepo<IConfigurationGroupModel>
     {
-        Task<IConfigurationGroupModel> GetByNameAndByCustomer(string name, string customerId);
+        Task<IConfigurationGroupModel> GetByNameAndByProject(string name, string projectId);
 
-        Task<IEnumerable<IConfigurationGroupModel>> GetByParentGroupAndByCustomer(string parentGroupId, string customerId);
+        Task<IEnumerable<IConfigurationGroupModel>> GetByParentGroup(string parentGroupId);
 
-        Task<IEnumerable<IConfigurationGroupModel>> GetWithoutParentGroupAndByCustomer(string customerId);
+        Task<IEnumerable<IConfigurationGroupModel>> GetRootLevelByProject(string projectId);
     }
 }
