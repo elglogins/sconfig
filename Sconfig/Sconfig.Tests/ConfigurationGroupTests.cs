@@ -99,11 +99,6 @@ namespace Sconfig.Tests
                  .Setup(_ => _.Get(It.Is<string>(s => s == DefaultChildConfigurationGroupModel.Id)))
                  .Returns(Task.FromResult(DefaultChildConfigurationGroupModel));
 
-                //configurationGroupRepository
-                // .Setup(_ => _.Get(It.Is<string>(s => s == DefaultApplicationModel.Name),
-                //    It.Is<string>(s => s == DefaultApplicationModel.ProjectId)))
-                // .Returns(Task.FromResult(DefaultApplicationModel));
-
                 // writes
                 configurationGroupRepository
                    .Setup(_ => _.Insert(It.IsAny<IConfigurationGroupModel>()))

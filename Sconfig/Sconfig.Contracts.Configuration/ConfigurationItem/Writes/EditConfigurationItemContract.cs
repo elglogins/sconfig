@@ -8,6 +8,7 @@ namespace Sconfig.Contracts.Configuration.ConfigurationItem.Writes
     {
         public string Id { get; set; }
         public string EnvironmentId { get; set; }
+        public string Name { get; set; }
         public string Value { get; set; }
         public string ParentId { get; set; }
         public string ApplicationId { get; set; }

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Moq;
 using Sconfig.Contracts.Configuration.ConfigurationItem.Enums;
+using Sconfig.Contracts.Configuration.ConfigurationItem.Writes;
 using Sconfig.Exceptions;
 using Sconfig.Interfaces.Factories;
 using Sconfig.Interfaces.Models;
@@ -222,6 +222,170 @@ namespace Sconfig.Tests
             var configurationItemService = InitConfigurationItemService(configurationItemRepository.Object, DefaultConfigurationItemFactoryMock.Object);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => configurationItemService.Delete(id, projectId, applicationId, environmentId));
             Assert.Equal(exceptionMessage.ToString(), exception.Message);
+        }
+
+        [Theory]
+        [InlineData("MY-TEST-CONFIGURATION-ITEM")]
+        [InlineData("ThisIsEdgeValueOfAllowedLength")]
+        public void Create(string name)
+        {
+            var contract = new CreateConfigurationItemContract()
+            {
+                Name = name,
+                EnvironmentId = DefaultConfigurationItemModel.EnvironmentId,
+                ProjectId = DefaultConfigurationItemModel.ProjectId,
+                ApplicationId = DefaultConfigurationItemModel.ApplicationId
+            };
+
+            var configurationItemRepositoryMock = DefaultConfigurationItemRepositoryMock;
+            var configurationItemService = InitConfigurationItemService(configurationItemRepositoryMock.Object, DefaultConfigurationItemFactoryMock.Object);
+
+            var result = configurationItemService.Create(contract).Result;
+            Assert.NotNull(result);
+            Assert.NotNull(result.Id);
+            Assert.Equal(contract.Name, result.Name);
+            Assert.Equal(contract.ApplicationId, result.ApplicationId);
+            Assert.Equal(contract.ProjectId, result.ProjectId);
+            Assert.Equal(contract.EnvironmentId, result.EnvironmentId);
+            Assert.NotEqual(DateTime.MinValue, result.CreatedOn);
+            configurationItemRepositoryMock.Verify(m => m.Insert(It.IsAny<IConfigurationItemModel>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task CreateAlreadyExisting()
+        {
+            var contract = new CreateConfigurationItemContract()
+            {
+                Name = DefaultConfigurationItemModel.Name,
+                EnvironmentId = DefaultConfigurationItemModel.EnvironmentId,
+                ProjectId = DefaultConfigurationItemModel.ProjectId,
+                ApplicationId = DefaultConfigurationItemModel.ApplicationId
+            };
+
+            var configurationGroupRepositoryMock = DefaultConfigurationItemRepositoryMock;
+            configurationGroupRepositoryMock
+                  .Setup(_ => _.GetByName(It.IsAny<string>(), It.IsAny<string>(),
+                  It.IsAny<string>(),
+                  It.IsAny<string>()))
+                  .Returns(Task.FromResult((IEnumerable<IConfigurationItemModel>) new List<IConfigurationItemModel>() { DefaultConfigurationItemModel }));
+
+            var configurationItemService = InitConfigurationItemService(configurationGroupRepositoryMock.Object, DefaultConfigurationItemFactoryMock.Object);
+            var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => configurationItemService.Create(contract));
+            Assert.Equal(ConfigurationItemValidationCodes.CONFIGURATION_ITEM_ALREADY_EXISTS.ToString(), exception.Message);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData("ThisNameIsLongerThanIsAllowed!!")]
+        public async Task CreateWithInvalidName(string name)
+        {
+            var contract = new CreateConfigurationItemContract()
+            {
+                Name = name,
+                EnvironmentId = DefaultConfigurationItemModel.EnvironmentId,
+                ProjectId = DefaultConfigurationItemModel.ProjectId,
+                ApplicationId = DefaultConfigurationItemModel.ApplicationId
+            };
+
+            var configurationItemService = InitConfigurationItemService(DefaultConfigurationItemRepositoryMock.Object, DefaultConfigurationItemFactoryMock.Object);
+            var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => configurationItemService.Create(contract));
+            Assert.Equal(ConfigurationItemValidationCodes.INVALID_CONFIGURATION_ITEM_NAME.ToString(), exception.Message);
+        }
+
+        [Theory]
+        [InlineData("MY-CONFIGURATION-GROUP-NAME")]
+        [InlineData("ThisIsEdgeValueOfAllowedLength")]
+        public void Edit(string name)
+        {
+            var editContract = new EditConfigurationItemContract()
+            {
+                Id = DefaultConfigurationItemModel.Id,
+                ApplicationId = DefaultConfigurationItemModel.ApplicationId,
+                ParentId = DefaultConfigurationItemModel.ParentId,
+                ProjectId = DefaultConfigurationItemModel.ProjectId,
+                SortingIndex = DefaultConfigurationItemModel.SortingIndex,
+                EnvironmentId = DefaultConfigurationItemModel.EnvironmentId,
+                Value = DefaultConfigurationItemModel.Value,
+                Name = name
+            };
+
+            var configurationItemRepositoryMock = DefaultConfigurationItemRepositoryMock;
+            var configurationItemService = InitConfigurationItemService(configurationItemRepositoryMock.Object, DefaultConfigurationItemFactoryMock.Object);
+
+            var result = configurationItemService.Edit(editContract).Result;
+            Assert.NotNull(result);
+            Assert.Equal(editContract.Id, result.Id);
+            Assert.Equal(editContract.Name, result.Name);
+            configurationItemRepositoryMock.Verify(m => m.Save(It.Is<IConfigurationItemModel>(p => p.Id == editContract.Id)), Times.Once);
+        }
+
+        [Fact]
+        public async Task EditNotExisting()
+        {
+            var contract = new EditConfigurationItemContract()
+            {
+                Id = "NOT-EXISTING-CONFIGURATION-ITEM-ID",
+                Name = "ThisIsNewAndValidName",
+                ProjectId = DefaultConfigurationItemModel.ProjectId
+            };
+
+            var configurationItemService = InitConfigurationItemService(DefaultConfigurationItemRepositoryMock.Object, DefaultConfigurationItemFactoryMock.Object);
+            var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => configurationItemService.Edit(contract));
+            Assert.Equal(ConfigurationItemValidationCodes.CONFIGURATION_ITEM_DOES_NOT_EXIST.ToString(), exception.Message);
+        }
+
+        [Fact]
+        public async Task EditAlreadyExistingName()
+        {
+            var contract = new EditConfigurationItemContract()
+            {
+                Id = DefaultConfigurationItemModel.Id,
+                Name = DefaultConfigurationItemModel.Name,
+                ProjectId = DefaultConfigurationItemModel.ProjectId
+            };
+
+            var configurationGroupRepositoryMock = DefaultConfigurationItemRepositoryMock;
+            var reservedNameModel = new ConfigurationItemTestModel()
+            {
+                Id = "TEST-CONFIGURATION-ITEM-2",
+                Name = DefaultConfigurationItemModel.Name
+            };
+
+            configurationGroupRepositoryMock
+                  .Setup(_ => _.GetByName(It.IsAny<string>(), It.IsAny<string>(),
+                  It.IsAny<string>(),
+                  It.IsAny<string>()))
+                  .Returns(Task.FromResult((IEnumerable<IConfigurationItemModel>)new List<IConfigurationItemModel>() { DefaultConfigurationItemModel, reservedNameModel }));
+
+            var configurationItemService = InitConfigurationItemService(configurationGroupRepositoryMock.Object, DefaultConfigurationItemFactoryMock.Object);
+            var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => configurationItemService.Edit(contract));
+            Assert.Equal(ConfigurationItemValidationCodes.CONFIGURATION_ITEM_ALREADY_EXISTS.ToString(), exception.Message);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData("ThisNameIsLongerThanIsAllowed!!")]
+        public async Task EditWithInvalidName(string name)
+        {
+            var contract = new EditConfigurationItemContract()
+            {
+                Id = DefaultConfigurationItemModel.Id,
+                ApplicationId = DefaultConfigurationItemModel.ApplicationId,
+                ParentId = DefaultConfigurationItemModel.ParentId,
+                ProjectId = DefaultConfigurationItemModel.ProjectId,
+                SortingIndex = DefaultConfigurationItemModel.SortingIndex,
+                EnvironmentId = DefaultConfigurationItemModel.EnvironmentId,
+                Value = DefaultConfigurationItemModel.Value,
+                Name = name
+            };
+
+            var configurationItemService = InitConfigurationItemService(DefaultConfigurationItemRepositoryMock.Object, DefaultConfigurationItemFactoryMock.Object);
+            var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => configurationItemService.Edit(contract));
+            Assert.Equal(ConfigurationItemValidationCodes.INVALID_CONFIGURATION_ITEM_NAME.ToString(), exception.Message);
         }
     }
 }
