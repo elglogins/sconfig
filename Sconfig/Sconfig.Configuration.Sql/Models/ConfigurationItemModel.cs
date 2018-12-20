@@ -16,5 +16,6 @@ namespace Sconfig.Configuration.Sql.Models
         public string ParentId { get; set; }
         public string ApplicationId { get; set; }
         public string ProjectId { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -1,0 +1,13 @@
+﻿namespace Sconfig.Contracts.Configuration.ConfigurationItem.Enums
+{
+    public enum ConfigurationItemValidationCodes
+    {
+        INVALID_CONFIGURATION_ITEM_NAME,
+        CONFIGURATION_ITEM_ALREADY_EXISTS,
+        CONFIGURATION_ITEM_DOES_NOT_EXIST,
+        INVALID_CONFIGURATION_ITEM_PROJECT,
+        INVALID_CONFIGURATION_ITEM_APPLICATION,
+        INVALID_CONFIGURATION_ITEM_ENVIRONMENT,
+        INVALID_CONFIGURATION_ITEM_PARENT
+    }
+}

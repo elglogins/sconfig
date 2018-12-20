@@ -5,6 +5,7 @@ namespace Sconfig.Interfaces.Models
 {
     public interface IConfigurationItemModel : ISortableEntity, IGroupableEntity, IStringKeyEntity, IApplicationsEntity, IProjectsEntity
     {
+        string Name { get; set; }
         string EnvironmentId { get; set; }
         string Value { get; set; }
         DateTime CreatedOn { get; set; }
