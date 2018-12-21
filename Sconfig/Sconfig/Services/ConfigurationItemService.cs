@@ -18,6 +18,7 @@ namespace Sconfig.Services
         private readonly IConfigurationItemRepository _configurationItemRepository;
 
         private const int MaxConfigurationItemNameLength = 30;
+        private const string IdentifierPrefix = "I-";
 
         public ConfigurationItemService(IConfigurationItemFactory configurationItemFactory, IConfigurationItemRepository configurationItemRepository)
         {
@@ -59,7 +60,7 @@ namespace Sconfig.Services
             }
 
             var model = _configurationItemFactory.InitConfigurationItemModel();
-            model.Id = Guid.NewGuid().ToString();
+            model.Id = IdentifierPrefix + Guid.NewGuid().ToString();
             model.Name = contract.Name;
             model.ParentId = contract.ParentId;
             model.ApplicationId = contract.ApplicationId;

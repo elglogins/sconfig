@@ -24,7 +24,7 @@ namespace Sconfig.Tests
                 return new ApplicationTestModel()
                 {
                     CreatedOn = DateTime.Now,
-                    Id = "TEST-APPLICATION-1",
+                    Id = "A-TEST-APPLICATION-1",
                     Name = "TEST APPLICATION",
                     ProjectId = "TEST-PROJECT-1"
                 };
@@ -269,7 +269,7 @@ namespace Sconfig.Tests
 
         [Theory]
         [InlineData("NOT-EXISTING-APPLICATION-ID", "TEST-PROJECT-1", ApplicationValidationCodes.APPLICATION_DOES_NOT_EXIST)]
-        [InlineData("TEST-APPLICATION-1", "INVALID-PROJECT-ID", ApplicationValidationCodes.INVALID_APPLICATION_PROJECT)]
+        [InlineData("A-TEST-APPLICATION-1", "INVALID-PROJECT-ID", ApplicationValidationCodes.INVALID_APPLICATION_PROJECT)]
         public async Task DeleteInvalid(string applicationId, string projectId, Enum exceptionMessage)
         {
             var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object);

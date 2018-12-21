@@ -25,7 +25,7 @@ namespace Sconfig.Tests
                 return new ConfigurationGroupTestModel()
                 {
                     CreatedOn = DateTime.Now,
-                    Id = "TEST-CONFIGURATION-GROUP-2",
+                    Id = "G-TEST-CONFIGURATION-GROUP-2",
                     Name = "TEST CONFIGURATION GROUP",
                     ProjectId = "TEST-PROJECT-1",
                     ApplicationId = null,
@@ -42,7 +42,7 @@ namespace Sconfig.Tests
                 return new ConfigurationGroupTestModel()
                 {
                     CreatedOn = DateTime.Now,
-                    Id = "TEST-CONFIGURATION-GROUP-1",
+                    Id = "G-TEST-CONFIGURATION-GROUP-1",
                     Name = "TEST CONFIGURATION GROUP",
                     ProjectId = "TEST-PROJECT-1",
                     ApplicationId = "TEST-APPLICATION-1",
@@ -59,7 +59,7 @@ namespace Sconfig.Tests
                 return new ConfigurationGroupTestModel()
                 {
                     CreatedOn = DateTime.Now,
-                    Id = "TEST-CONFIGURATION-GROUP-3",
+                    Id = "G-TEST-CONFIGURATION-GROUP-3",
                     Name = "TEST CONFIGURATION GROUP",
                     ProjectId = "TEST-PROJECT-1",
                     ApplicationId = "TEST-APPLICATION-1",
@@ -121,8 +121,8 @@ namespace Sconfig.Tests
         #endregion
 
         [Theory]
-        [InlineData("TEST-CONFIGURATION-GROUP-2", "TEST-PROJECT-1", null)]
-        [InlineData("TEST-CONFIGURATION-GROUP-1", "TEST-PROJECT-1", "TEST-APPLICATION-1")]
+        [InlineData("G-TEST-CONFIGURATION-GROUP-2", "TEST-PROJECT-1", null)]
+        [InlineData("G-TEST-CONFIGURATION-GROUP-1", "TEST-PROJECT-1", "TEST-APPLICATION-1")]
         public void GetExisting(string id, string projectId, string applicationId)
         {
             var configurationGroupService = InitConfigurationGroupService(DefaultConfigurationGroupRepositoryMock.Object, DefaultConfigurationGroupFactoryMock.Object);
@@ -134,10 +134,10 @@ namespace Sconfig.Tests
         }
 
         [Theory]
-        [InlineData("TEST-CONFIGURATION-GROUP-1", "TEST-PROJECT-1", null)]
-        [InlineData("TEST-CONFIGURATION-GROUP-1", "TEST-PROJECT-1", "TEST-APPLICATION-2")]
-        [InlineData("TEST-CONFIGURATION-GROUP-1", "TEST-PROJECT-1", "")]
-        [InlineData("TEST-CONFIGURATION-GROUP-1", "TEST-PROJECT-1", " ")]
+        [InlineData("G-TEST-CONFIGURATION-GROUP-1", "TEST-PROJECT-1", null)]
+        [InlineData("G-TEST-CONFIGURATION-GROUP-1", "TEST-PROJECT-1", "TEST-APPLICATION-2")]
+        [InlineData("G-TEST-CONFIGURATION-GROUP-1", "TEST-PROJECT-1", "")]
+        [InlineData("G-TEST-CONFIGURATION-GROUP-1", "TEST-PROJECT-1", " ")]
         public void GetWithForWrongApplication(string id, string projectId, string applicationId)
         {
             var configurationGroupService = InitConfigurationGroupService(DefaultConfigurationGroupRepositoryMock.Object, DefaultConfigurationGroupFactoryMock.Object);
@@ -357,8 +357,8 @@ namespace Sconfig.Tests
 
         [Theory]
         [InlineData("NOT-EXISTING-CONFIGURATION-GROUP-ID", "TEST-PROJECT-1", null, ConfigurationGroupValidationCodes.CONFIGURATION_GROUP_DOES_NOT_EXIST)]
-        [InlineData("TEST-CONFIGURATION-GROUP-1", "INVALID-PROJECT-ID", null, ConfigurationGroupValidationCodes.INVALID_CONFIGURATION_GROUP_PROJECT)]
-        [InlineData("TEST-CONFIGURATION-GROUP-1", "TEST-PROJECT-1", "INVALID-APPLICATION-ID", ConfigurationGroupValidationCodes.INVALID_CONFIGURATION_GROUP_APPLICATION)]
+        [InlineData("G-TEST-CONFIGURATION-GROUP-1", "INVALID-PROJECT-ID", null, ConfigurationGroupValidationCodes.INVALID_CONFIGURATION_GROUP_PROJECT)]
+        [InlineData("G-TEST-CONFIGURATION-GROUP-1", "TEST-PROJECT-1", "INVALID-APPLICATION-ID", ConfigurationGroupValidationCodes.INVALID_CONFIGURATION_GROUP_APPLICATION)]
         public async Task DeleteInvalid(string id, string projectId, string applicationId, Enum exceptionMessage)
         {
             var configurationGroupService = InitConfigurationGroupService(DefaultConfigurationGroupRepositoryMock.Object, DefaultConfigurationGroupFactoryMock.Object);

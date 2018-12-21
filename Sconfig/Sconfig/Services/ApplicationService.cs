@@ -17,6 +17,7 @@ namespace Sconfig.Services
         private readonly IApplicationFactory _applicationFactory;
 
         private const int MaxApplicationNameLength = 50;
+        private const string IdentifierPrefix = "A-";
 
         public ApplicationService(IApplicationRepository applicationRepository, IApplicationFactory applicationFactory)
         {
@@ -40,7 +41,7 @@ namespace Sconfig.Services
                 throw new ValidationCodeException(ApplicationValidationCodes.APPLICATION_ALREADY_EXISTS);
 
             var model = _applicationFactory.InitApplicationModel();
-            model.Id = Guid.NewGuid().ToString();
+            model.Id = IdentifierPrefix + Guid.NewGuid().ToString();
             model.Name = contract.Name;
             model.ProjectId = contract.ProjectId;
             model.CreatedOn = DateTime.Now;

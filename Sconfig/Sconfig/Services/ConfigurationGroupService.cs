@@ -18,6 +18,7 @@ namespace Sconfig.Services
         private readonly IConfigurationGroupFactory _configurationGroupFactory;
 
         private const int MaxConfigurationGroupNameLength = 30;
+        private const string IdentifierPrefix = "G-";
 
         public ConfigurationGroupService(
             IConfigurationGroupRepository configurationGroupRepository,
@@ -74,7 +75,7 @@ namespace Sconfig.Services
             }
 
             var model = _configurationGroupFactory.InitConfigurationGroupModel();
-            model.Id = Guid.NewGuid().ToString();
+            model.Id = IdentifierPrefix + Guid.NewGuid().ToString();
             model.Name = contract.Name;
             model.ParentId = contract.ParentId;
             model.ApplicationId = contract.ApplicationId;

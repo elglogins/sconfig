@@ -26,7 +26,7 @@ namespace Sconfig.Tests
                 return new ConfigurationItemTestModel()
                 {
                     CreatedOn = DateTime.Now,
-                    Id = "TEST-CONFIGURATION-ITEM-1",
+                    Id = "I-TEST-CONFIGURATION-ITEM-1",
                     Name = "TEST CONFIGURATION ITEM",
                     ProjectId = "TEST-PROJECT-1",
                     ApplicationId = null,
@@ -205,9 +205,9 @@ namespace Sconfig.Tests
 
         [Theory]
         [InlineData("INVALID-CONFIGURATION-ITEM-ID", "TEST-PROJECT-1", "TEST-APPLICATION-1", "TEST-ENVIRONMENT-1", ConfigurationItemValidationCodes.CONFIGURATION_ITEM_DOES_NOT_EXIST)]
-        [InlineData("TEST-CONFIGURATION-ITEM-1", "INVALID-PROJECT", "TEST-APPLICATION-1", "TEST-ENVIRONMENT-1", ConfigurationItemValidationCodes.INVALID_CONFIGURATION_ITEM_PROJECT)]
-        [InlineData("TEST-CONFIGURATION-ITEM-1", "TEST-PROJECT-1", "INVALID-APPLICATION", "TEST-ENVIRONMENT-1", ConfigurationItemValidationCodes.INVALID_CONFIGURATION_ITEM_APPLICATION)]
-        [InlineData("TEST-CONFIGURATION-ITEM-1", "TEST-PROJECT-1", "TEST-APPLICATION-1", "INVALID-ENVIRONMENT", ConfigurationItemValidationCodes.INVALID_CONFIGURATION_ITEM_ENVIRONMENT)]
+        [InlineData("I-TEST-CONFIGURATION-ITEM-1", "INVALID-PROJECT", "TEST-APPLICATION-1", "TEST-ENVIRONMENT-1", ConfigurationItemValidationCodes.INVALID_CONFIGURATION_ITEM_PROJECT)]
+        [InlineData("I-TEST-CONFIGURATION-ITEM-1", "TEST-PROJECT-1", "INVALID-APPLICATION", "TEST-ENVIRONMENT-1", ConfigurationItemValidationCodes.INVALID_CONFIGURATION_ITEM_APPLICATION)]
+        [InlineData("I-TEST-CONFIGURATION-ITEM-1", "TEST-PROJECT-1", "TEST-APPLICATION-1", "INVALID-ENVIRONMENT", ConfigurationItemValidationCodes.INVALID_CONFIGURATION_ITEM_ENVIRONMENT)]
         public async Task DeleteInvalid(string id, string projectId, string applicationId, string environmentId, Enum exceptionMessage)
         {
             var model = DefaultConfigurationItemModel;

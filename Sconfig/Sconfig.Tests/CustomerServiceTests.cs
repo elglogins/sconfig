@@ -26,7 +26,7 @@ namespace Sconfig.Tests
                 {
                     Active = true,
                     CreatedOn = DateTime.Now,
-                    Id = "TEST-USER-1",
+                    Id = "C-TEST-USER-1",
                     Name = "TEST USER"
                 };
             }

@@ -17,6 +17,7 @@ namespace Sconfig.Services
         private readonly IProjectRepository _projectRepository;
 
         private const int MaxProjectNameLength = 50;
+        private const string IdentifierPrefix = "P-";
 
         public ProjectService(IProjectFactory projectFactory, IProjectRepository projectRepository)
         {
@@ -40,7 +41,7 @@ namespace Sconfig.Services
                 throw new ValidationCodeException(ProjectValidationCode.PROJECT_ALREADY_EXISTS);
 
             var model = _projectFactory.InitProjectModel();
-            model.Id = Guid.NewGuid().ToString();
+            model.Id = IdentifierPrefix + Guid.NewGuid().ToString();
             model.Name = contract.Name;
             model.CustomerId = customerId;
             model.CreatedOn = DateTime.Now;

@@ -18,6 +18,7 @@ namespace Sconfig.Services
         private readonly ICustomerFactory _customerFactory;
 
         private const int MaxCustomerNameLength = 30;
+        private const string IdentifierPrefix = "C-";
 
         public CustomerService(
             ICustomerRepository customerRepository,
@@ -49,7 +50,7 @@ namespace Sconfig.Services
                 throw new ValidationCodeException(CustomerValidationCode.CUSTOMER_ALREADY_EXISTS);
 
             var model = _customerFactory.InitCustomerModel();
-            model.Id = Guid.NewGuid().ToString();
+            model.Id = IdentifierPrefix + Guid.NewGuid().ToString();
             model.Name = contract.Name;
             model.Active = true;
             model.CreatedOn = DateTime.Now;

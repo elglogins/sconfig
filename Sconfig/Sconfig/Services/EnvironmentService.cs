@@ -17,6 +17,7 @@ namespace Sconfig.Services
         private readonly IEnvironmentFactory _environmentFactory;
 
         private const int MaxEnvironmentNameLength = 50;
+        private const string IdentifierPrefix = "E-";
 
         public EnvironmentService(IEnvironmentRepository environmentRepository, IEnvironmentFactory environmentFactory)
         {
@@ -41,7 +42,7 @@ namespace Sconfig.Services
 
             var model = _environmentFactory.InitEnvironmentModel();
 
-            model.Id = Guid.NewGuid().ToString();
+            model.Id = IdentifierPrefix + Guid.NewGuid().ToString();
             model.Name = contract.Name;
             model.ProjectId = contract.ProjectId;
             model.CreatedOn = DateTime.Now;

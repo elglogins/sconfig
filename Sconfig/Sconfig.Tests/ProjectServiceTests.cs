@@ -24,7 +24,7 @@ namespace Sconfig.Tests
                 return new ProjectTestModel()
                 {
                     CreatedOn = DateTime.Now,
-                    Id = "TEST-PROJECT-1",
+                    Id = "P-TEST-PROJECT-1",
                     Name = "TEST PROJECT",
                     CustomerId = "TEST-CUSTOMER-1"
                 };
@@ -256,7 +256,7 @@ namespace Sconfig.Tests
 
         [Theory]
         [InlineData("NOT-EXISTING-PROJECT-ID", "TEST-CUSTOMER-1", ProjectValidationCode.PROJECT_DOES_NOT_EXIST)]
-        [InlineData("TEST-PROJECT-1", "INVALID-CUSTOMER-ID", ProjectValidationCode.INVALID_PROJECT_OWNER)]
+        [InlineData("P-TEST-PROJECT-1", "INVALID-CUSTOMER-ID", ProjectValidationCode.INVALID_PROJECT_OWNER)]
         public async Task DeleteInvalid(string projectId, string customerId, Enum exceptionMessage)
         {
             var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object);

@@ -25,7 +25,7 @@ namespace Sconfig.Tests
                 return new EnvironmentTestModel()
                 {
                     CreatedOn = DateTime.Now,
-                    Id = "TEST-ENVIRONMENT-1",
+                    Id = "E-TEST-ENVIRONMENT-1",
                     Name = "TEST ENVIRONMENT",
                     ProjectId = "TEST-PROJECT-1"
                 };
@@ -271,7 +271,7 @@ namespace Sconfig.Tests
 
         [Theory]
         [InlineData("NOT-EXISTING-ENVIRONMENT-ID", "TEST-PROJECT-1", EnvironmentValidationCode.ENVIRONMENT_DOES_NOT_EXIST)]
-        [InlineData("TEST-ENVIRONMENT-1", "INVALID-PROJECT-ID", EnvironmentValidationCode.INVALID_ENVIRONMENT_PROJECT)]
+        [InlineData("E-TEST-ENVIRONMENT-1", "INVALID-PROJECT-ID", EnvironmentValidationCode.INVALID_ENVIRONMENT_PROJECT)]
         public async Task DeleteInvalid(string environmentId, string projectId, Enum exceptionMessage)
         {
             var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
