@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Sconfig.Contracts.Project.Enums;
 using Sconfig.Contracts.Project.Reads;
 using Sconfig.Contracts.Project.Writes;
 using Sconfig.Exceptions;
 using Sconfig.Interfaces.Factories;
-using Sconfig.Interfaces.Models;
+using Sconfig.Interfaces.Mapping;
 using Sconfig.Interfaces.Repositories;
 using Sconfig.Interfaces.Services;
 
@@ -15,14 +17,16 @@ namespace Sconfig.Services
     {
         private readonly IProjectFactory _projectFactory;
         private readonly IProjectRepository _projectRepository;
+        private readonly IProjectMapper _projectMapper;
 
         private const int MaxProjectNameLength = 50;
         private const string IdentifierPrefix = "P-";
 
-        public ProjectService(IProjectFactory projectFactory, IProjectRepository projectRepository)
+        public ProjectService(IProjectFactory projectFactory, IProjectRepository projectRepository, IProjectMapper projectMapper)
         {
             _projectFactory = projectFactory;
             _projectRepository = projectRepository;
+            _projectMapper = projectMapper;
         }
 
         public async Task<ProjectContract> Create(CreateProjectContract contract, string customerId)
@@ -46,7 +50,15 @@ namespace Sconfig.Services
             model.CustomerId = customerId;
             model.CreatedOn = DateTime.Now;
             await _projectRepository.Insert(model);
-            return Map(model);
+            return _projectMapper.Map(model);
+        }
+
+        public async Task<IEnumerable<ProjectContract>> GetByCustomer(string customerId)
+        {
+            if (String.IsNullOrWhiteSpace(customerId))
+                return null;
+
+            return (await _projectRepository.GetByCustomer(customerId)).Select(_projectMapper.Map);
         }
 
         public async Task<ProjectContract> Get(string id, string customerId)
@@ -64,20 +76,7 @@ namespace Sconfig.Services
             if (project.CustomerId != customerId)
                 return null;
 
-            return Map(project);
-        }
-
-        private ProjectContract Map(IProjectModel model)
-        {
-            if (model == null)
-                return null;
-
-            return new ProjectContract
-            {
-                Id = model.Id,
-                Name = model.Name,
-                CreatedOn = model.CreatedOn
-            };
+            return _projectMapper.Map(project);
         }
 
         public async Task<ProjectContract> Edit(EditProjectContract contract, string customerId)
@@ -103,7 +102,7 @@ namespace Sconfig.Services
                 throw new ValidationCodeException(ProjectValidationCode.PROJECT_ALREADY_EXISTS);
 
             project.Name = contract.Name;
-            return Map(_projectRepository.Save(project));
+            return _projectMapper.Map(_projectRepository.Save(project));
         }
 
         public async Task Delete(string projectId, string customerId)

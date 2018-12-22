@@ -14,18 +14,45 @@ namespace Sconfig.Configuration.Sql.Extensions
             collection.AddSingleton<ISconfigSqlConfiguration>(configuration);
         }
 
+        public static void AddSConfigSql(this IServiceCollection collection)
+        {
+            collection.AddSConfigSqlCustomers();
+            collection.AddSConfigSqlConfigurationGroupsAndItems();
+            collection.AddSConfigSqlEnvironments();
+            collection.AddSConfigSqlApplications();
+            collection.AddSConfigSqlProjects();
+        }
+
         public static void AddSConfigSqlCustomers(this IServiceCollection collection)
         {
             collection.AddSingleton<ICustomerRepository, CustomerRepository>();
             collection.AddTransient<ICustomerFactory, CustomerFactory>();
         }
 
-        public static void AddSConfigSqlConfiguration(this IServiceCollection collection)
+        public static void AddSConfigSqlConfigurationGroupsAndItems(this IServiceCollection collection)
         {
             collection.AddSingleton<IConfigurationItemRepository, ConfigurationItemRepository>();
             collection.AddSingleton<IConfigurationGroupRepository, ConfigurationGroupRepository>();
+            collection.AddSingleton<IConfigurationItemFactory, ConfigurationItemFactory>();
+            collection.AddSingleton<IConfigurationGroupFactory, ConfigurationGroupFactory>();
+        }
 
-            //collection.AddTransient<IConfigurationGroupFactory, ConfigurationGroupFactory>();
+        public static void AddSConfigSqlEnvironments(this IServiceCollection collection)
+        {
+            collection.AddSingleton<IEnvironmentRepository, EnvironmentRepository>();
+            collection.AddSingleton<IEnvironmentFactory, EnvironmentFactory>();
+        }
+
+        public static void AddSConfigSqlApplications(this IServiceCollection collection)
+        {
+            collection.AddSingleton<IApplicationRepository, ApplicationRepository>();
+            collection.AddSingleton<IApplicationFactory, ApplicationFactory>();
+        }
+
+        public static void AddSConfigSqlProjects(this IServiceCollection collection)
+        {
+            collection.AddSingleton<IProjectRepository, ProjectRepository>();
+            collection.AddSingleton<IProjectFactory, ProjectFactory>();
         }
     }
 }

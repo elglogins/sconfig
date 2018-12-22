@@ -5,7 +5,7 @@ using Sconfig.Contracts.Environment.Reads;
 using Sconfig.Contracts.Environment.Writes;
 using Sconfig.Exceptions;
 using Sconfig.Interfaces.Factories;
-using Sconfig.Interfaces.Models;
+using Sconfig.Interfaces.Mapping;
 using Sconfig.Interfaces.Repositories;
 using Sconfig.Interfaces.Services;
 
@@ -15,14 +15,16 @@ namespace Sconfig.Services
     {
         private readonly IEnvironmentRepository _environmentRepository;
         private readonly IEnvironmentFactory _environmentFactory;
+        private readonly IEnvironmentMapper _environmentMapper;
 
         private const int MaxEnvironmentNameLength = 50;
         private const string IdentifierPrefix = "E-";
 
-        public EnvironmentService(IEnvironmentRepository environmentRepository, IEnvironmentFactory environmentFactory)
+        public EnvironmentService(IEnvironmentRepository environmentRepository, IEnvironmentFactory environmentFactory, IEnvironmentMapper environmentMapper)
         {
             _environmentRepository = environmentRepository;
             _environmentFactory = environmentFactory;
+            _environmentMapper = environmentMapper;
         }
 
         public async Task<EnvironmentContract> Create(CreateEnvironmentContract contract)
@@ -47,7 +49,7 @@ namespace Sconfig.Services
             model.ProjectId = contract.ProjectId;
             model.CreatedOn = DateTime.Now;
             await _environmentRepository.Insert(model);
-            return Map(model);
+            return _environmentMapper.Map(model);
         }
 
         public async Task<EnvironmentContract> Get(string id, string projectId)
@@ -56,7 +58,7 @@ namespace Sconfig.Services
             if (model == null || model.ProjectId != projectId)
                 return null;
 
-            return Map(model);
+            return _environmentMapper.Map(model);
         }
 
         public async Task Delete(string id, string projectId)
@@ -100,22 +102,7 @@ namespace Sconfig.Services
                 throw new ValidationCodeException(EnvironmentValidationCode.ENVIRONMENT_ALREADY_EXISTS);
 
             environment.Name = contract.Name;
-            return Map(_environmentRepository.Save(environment));
+            return _environmentMapper.Map(_environmentRepository.Save(environment));
         }
-
-
-        private EnvironmentContract Map(IEnvironmentModel model)
-        {
-            if (model == null)
-                return null;
-
-            return new EnvironmentContract
-            {
-                Id = model.Id,
-                Name = model.Name,
-                CreatedOn = model.CreatedOn
-            };
-        }
-
     }
 }

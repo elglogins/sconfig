@@ -13,24 +13,60 @@ namespace Sconfig.Configuration.Sql.Repositories
         {
         }
 
-        public Task<IEnumerable<IConfigurationItemModel>> GetByName(string name, string projectId, string applicationId, string parentId)
+        public async Task<IEnumerable<IConfigurationItemModel>> GetByName(string name, string projectId, string applicationId, string parentId)
         {
-            throw new System.NotImplementedException();
+            var sql = string.Format(@"
+                SELECT * FROM {0}
+                WHERE
+                    [Name] = @0
+                    AND [ProjectId] = @1
+                    {1}
+                    {2}
+            ",
+                TableName,
+                string.IsNullOrWhiteSpace(applicationId) ? "AND [ApplicationId] IS NULL" : " AND [ApplicationId] = @2",
+                string.IsNullOrWhiteSpace(parentId) ? "AND [ParentId] IS NULL" : " AND [ParentId] = @3"
+            );
+
+            using (var db = GetClient())
+            {
+                return await db.QueryAsync<ConfigurationItemModel>(sql, name, projectId, applicationId, parentId);
+            }
         }
 
-        public Task<IEnumerable<IConfigurationItemModel>> GetByParent(string parentId, string projectId, string applicationId)
+        public async Task<IEnumerable<IConfigurationItemModel>> GetByParent(string parentId, string projectId, string applicationId)
         {
-            throw new System.NotImplementedException();
+            var sql = string.Format(@"
+                SELECT * FROM {0}
+                WHERE
+                    [ProjectId] = @0
+                    AND [ParentId] = @1
+                    {1}
+            ",
+                TableName,
+                string.IsNullOrWhiteSpace(applicationId) ? "AND [ApplicationId] IS NULL" : " AND [ApplicationId] = @2"
+            );
+
+            using (var db = GetClient())
+            {
+                return await db.QueryAsync<ConfigurationItemModel>(sql, projectId, parentId, applicationId);
+            }
         }
 
-        public Task<IEnumerable<IConfigurationItemModel>> GetRootLevelByApplication(string applicationId)
+        public async Task<IEnumerable<IConfigurationItemModel>> GetRootLevelByApplication(string applicationId)
         {
-            throw new System.NotImplementedException();
+            using (var db = GetClient())
+            {
+                return await db.QueryAsync<ConfigurationItemModel>($"SELECT * FROM {TableName} WHERE [ApplicationId] = @0", applicationId);
+            }
         }
 
-        public Task<IEnumerable<IConfigurationItemModel>> GetRootLevelByProject(string projectId)
+        public async Task<IEnumerable<IConfigurationItemModel>> GetRootLevelByProject(string projectId)
         {
-            throw new System.NotImplementedException();
+            using (var db = GetClient())
+            {
+                return await db.QueryAsync<ConfigurationItemModel>($"SELECT * FROM {TableName} WHERE [ProjectId] = @0", projectId);
+            }
         }
     }
 }

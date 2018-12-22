@@ -2,6 +2,7 @@
 using Sconfig.Configuration.Sql.Models;
 using Sconfig.Interfaces.Models;
 using Sconfig.Interfaces.Repositories;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Sconfig.Configuration.Sql.Repositories
@@ -10,6 +11,14 @@ namespace Sconfig.Configuration.Sql.Repositories
     {
         public ProjectRepository(ISconfigSqlConfiguration configuration) : base(configuration)
         {
+        }
+
+        public async Task<IEnumerable<IProjectModel>> GetByCustomer(string customerId)
+        {
+            using (var db = GetClient())
+            {
+                return await db.FetchAsync<ProjectModel>($"SELECT * FROM [{TableName}] WHERE [CustomerId] = @0", customerId);
+            }
         }
 
         public async Task<IProjectModel> GetByName(string name, string customerId)

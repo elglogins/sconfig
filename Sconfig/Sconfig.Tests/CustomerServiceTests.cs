@@ -6,8 +6,10 @@ using Sconfig.Contracts.Customer.Enums;
 using Sconfig.Contracts.Customer.Writes;
 using Sconfig.Exceptions;
 using Sconfig.Interfaces.Factories;
+using Sconfig.Interfaces.Mapping;
 using Sconfig.Interfaces.Models;
 using Sconfig.Interfaces.Repositories;
+using Sconfig.Mapping;
 using Sconfig.Services;
 using Sconfig.Tests.Models;
 using Xunit;
@@ -44,6 +46,14 @@ namespace Sconfig.Tests
             }
         }
 
+        private ICustomerMapper DefaultCustomerMapper
+        {
+            get
+            {
+                return new CustomerMapper();
+            }
+        }
+
         private Mock<ICustomerRepository> DefaultCustomerRepositoryMock
         {
             get
@@ -74,7 +84,7 @@ namespace Sconfig.Tests
         [Fact]
         public void GetExisting()
         {
-            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object);
+            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object, DefaultCustomerMapper);
             var result = customerService.Get(DefaultCustomerModel.Id).Result;
 
             Assert.NotNull(result);
@@ -85,7 +95,7 @@ namespace Sconfig.Tests
         [Fact]
         public void GetCustomerWithNullIdentifier()
         {
-            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object);
+            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object, DefaultCustomerMapper);
             var result = customerService.Get(null).Result;
             Assert.Null(result);
         }
@@ -93,7 +103,7 @@ namespace Sconfig.Tests
         [Fact]
         public void GetNotExisting()
         {
-            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object);
+            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object, DefaultCustomerMapper);
             var result = customerService.Get("NOT-EXISTING-USER-ID").Result;
             Assert.Null(result);
         }
@@ -109,7 +119,7 @@ namespace Sconfig.Tests
             };
 
             var customerRepositoryMock = DefaultCustomerRepositoryMock;
-            var customerService = new CustomerService(customerRepositoryMock.Object, DefaultCustomerFactoryMock.Object);
+            var customerService = new CustomerService(customerRepositoryMock.Object, DefaultCustomerFactoryMock.Object, DefaultCustomerMapper);
             var result = customerService.Create(contract).Result;
 
             Assert.NotNull(result);
@@ -129,7 +139,7 @@ namespace Sconfig.Tests
                 Name = DefaultCustomerModel.Name
             };
 
-            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object);
+            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object, DefaultCustomerMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => customerService.Create(contract));
             Assert.Equal(CustomerValidationCode.CUSTOMER_ALREADY_EXISTS.ToString(), exception.Message);
         }
@@ -146,7 +156,7 @@ namespace Sconfig.Tests
                 Name = name
             };
 
-            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object);
+            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object, DefaultCustomerMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => customerService.Create(contract));
             Assert.Equal(CustomerValidationCode.INVALID_CUSTOMER_NAME.ToString(), exception.Message);
         }
@@ -155,7 +165,7 @@ namespace Sconfig.Tests
         public async Task Disable()
         {
             var customerRepositoryMock = DefaultCustomerRepositoryMock;
-            var customerService = new CustomerService(customerRepositoryMock.Object, DefaultCustomerFactoryMock.Object);
+            var customerService = new CustomerService(customerRepositoryMock.Object, DefaultCustomerFactoryMock.Object, DefaultCustomerMapper);
             var result = await customerService.Disable(DefaultCustomerModel.Id);
             Assert.NotNull(result);
             Assert.False(result.Active);
@@ -165,7 +175,7 @@ namespace Sconfig.Tests
         [Fact]
         public async Task DisableNotExisting()
         {
-            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object);
+            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object, DefaultCustomerMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => customerService.Disable("NOT-EXISTING-CUSTOMER-ID"));
             Assert.Equal(CustomerValidationCode.CUSTOMER_DOES_NOT_EXIST.ToString(), exception.Message);
         }
@@ -176,7 +186,7 @@ namespace Sconfig.Tests
         [InlineData(" ")]
         public async Task DisableWithInvalidId(string id)
         {
-            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object);
+            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object, DefaultCustomerMapper);
             await Assert.ThrowsAsync<ArgumentNullException>(() => customerService.Disable(id));
         }
 
@@ -184,7 +194,7 @@ namespace Sconfig.Tests
         public async Task Enable()
         {
             var customerRepositoryMock = DefaultCustomerRepositoryMock;
-            var customerService = new CustomerService(customerRepositoryMock.Object, DefaultCustomerFactoryMock.Object);
+            var customerService = new CustomerService(customerRepositoryMock.Object, DefaultCustomerFactoryMock.Object, DefaultCustomerMapper);
             var result = await customerService.Enable(DefaultCustomerModel.Id);
             Assert.NotNull(result);
             Assert.True(result.Active);
@@ -194,7 +204,7 @@ namespace Sconfig.Tests
         [Fact]
         public async Task EnableNotExisting()
         {
-            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object);
+            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object, DefaultCustomerMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => customerService.Enable("NOT-EXISTING-CUSTOMER-ID"));
             Assert.Equal(CustomerValidationCode.CUSTOMER_DOES_NOT_EXIST.ToString(), exception.Message);
         }
@@ -211,7 +221,7 @@ namespace Sconfig.Tests
             };
 
             var customerRepositoryMock = DefaultCustomerRepositoryMock;
-            var customerService = new CustomerService(customerRepositoryMock.Object, DefaultCustomerFactoryMock.Object);
+            var customerService = new CustomerService(customerRepositoryMock.Object, DefaultCustomerFactoryMock.Object, DefaultCustomerMapper);
             var result = await customerService.Edit(editContract);
 
             Assert.NotNull(result);
@@ -228,7 +238,7 @@ namespace Sconfig.Tests
                 Name = "ThisIsNewAndValidName"
             };
 
-            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object);
+            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object, DefaultCustomerMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => customerService.Edit(contract));
             Assert.Equal(CustomerValidationCode.CUSTOMER_DOES_NOT_EXIST.ToString(), exception.Message);
         }
@@ -246,7 +256,7 @@ namespace Sconfig.Tests
                 Id = DefaultCustomerModel.Id,
             };
 
-            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object);
+            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object, DefaultCustomerMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => customerService.Edit(contract));
             Assert.Equal(CustomerValidationCode.INVALID_CUSTOMER_NAME.ToString(), exception.Message);
         }
@@ -260,7 +270,7 @@ namespace Sconfig.Tests
                 Name = DefaultCustomerModel.Name
             };
 
-            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object);
+            var customerService = new CustomerService(DefaultCustomerRepositoryMock.Object, DefaultCustomerFactoryMock.Object, DefaultCustomerMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => customerService.Edit(contract));
             Assert.Equal(CustomerValidationCode.CUSTOMER_ALREADY_EXISTS.ToString(), exception.Message);
         }

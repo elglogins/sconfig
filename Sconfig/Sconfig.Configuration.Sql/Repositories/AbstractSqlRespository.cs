@@ -38,7 +38,7 @@ namespace Sconfig.Configuration.Sql.Repositories
         {
             using (var db = GetClient())
             {
-                return await db.QueryAsync<TK>($"SELECT * FROM [{TableName}]");
+                return await db.FetchAsync<TK>($"SELECT * FROM [{TableName}]");
             }
         }
 
@@ -46,7 +46,7 @@ namespace Sconfig.Configuration.Sql.Repositories
         {
             using (var db = GetClient())
             {
-                return await db.QueryAsync<TK>($"SELECT * FROM [{TableName}] WHERE [{PrimaryKey}] IN (@0)", ids);
+                return await db.FetchAsync<TK>($"SELECT * FROM [{TableName}] WHERE [{PrimaryKey}] IN (@0)", ids);
             }
         }
 

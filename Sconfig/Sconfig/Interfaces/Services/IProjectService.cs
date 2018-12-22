@@ -1,5 +1,6 @@
 ﻿using Sconfig.Contracts.Project.Reads;
 using Sconfig.Contracts.Project.Writes;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Sconfig.Interfaces.Services
@@ -13,5 +14,7 @@ namespace Sconfig.Interfaces.Services
         Task Delete(string projectId, string customerId);
 
         Task<ProjectContract> Edit(EditProjectContract contract, string customerId);
+
+        Task<IEnumerable<ProjectContract>> GetByCustomer(string customerId);
     }
 }

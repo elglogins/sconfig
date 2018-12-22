@@ -5,8 +5,10 @@ using Sconfig.Contracts.Project.Enums;
 using Sconfig.Contracts.Project.Writes;
 using Sconfig.Exceptions;
 using Sconfig.Interfaces.Factories;
+using Sconfig.Interfaces.Mapping;
 using Sconfig.Interfaces.Models;
 using Sconfig.Interfaces.Repositories;
+using Sconfig.Mapping;
 using Sconfig.Services;
 using Sconfig.Tests.Models;
 using Xunit;
@@ -28,6 +30,14 @@ namespace Sconfig.Tests
                     Name = "TEST PROJECT",
                     CustomerId = "TEST-CUSTOMER-1"
                 };
+            }
+        }
+
+        private IProjectMapper DefaultProjectMapper
+        {
+            get
+            {
+                return new ProjectMapper();
             }
         }
 
@@ -75,7 +85,7 @@ namespace Sconfig.Tests
         [Fact]
         public void GetExisting()
         {
-            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object);
+            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object, DefaultProjectMapper);
             var result = projectService.Get(DefaultProjectModel.Id, DefaultProjectModel.CustomerId).Result;
 
             Assert.NotNull(result);
@@ -89,7 +99,7 @@ namespace Sconfig.Tests
         [InlineData(null, " ")]
         public void GetWithNullIdentifiers(string projectId, string customerId)
         {
-            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object);
+            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object, DefaultProjectMapper);
             var result = projectService.Get(projectId, customerId).Result;
             Assert.Null(result);
         }
@@ -97,7 +107,7 @@ namespace Sconfig.Tests
         [Fact]
         public void GetNotExisting()
         {
-            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object);
+            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object, DefaultProjectMapper);
             var result = projectService.Get("NOT-EXISTING-PROJECT-ID", DefaultProjectModel.CustomerId).Result;
             Assert.Null(result);
         }
@@ -113,7 +123,7 @@ namespace Sconfig.Tests
             };
 
             var projectRepositoryMock = DefaultProjectRepositoryMock;
-            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, projectRepositoryMock.Object);
+            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, projectRepositoryMock.Object, DefaultProjectMapper);
             var result = projectService.Create(contract, DefaultProjectModel.CustomerId).Result;
             Assert.NotNull(result);
             Assert.NotNull(result.Id);
@@ -130,7 +140,7 @@ namespace Sconfig.Tests
                 Name = DefaultProjectModel.Name
             };
 
-            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object);
+            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object, DefaultProjectMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => projectService.Create(contract, DefaultProjectModel.CustomerId));
             Assert.Equal(ProjectValidationCode.PROJECT_ALREADY_EXISTS.ToString(), exception.Message);
         }
@@ -147,7 +157,7 @@ namespace Sconfig.Tests
                 Name = name
             };
 
-            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object);
+            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object, DefaultProjectMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => projectService.Create(contract, DefaultProjectModel.CustomerId));
             Assert.Equal(ProjectValidationCode.INVALID_PROJECT_NAME.ToString(), exception.Message);
         }
@@ -164,7 +174,7 @@ namespace Sconfig.Tests
             };
 
             var projectRepositoryMock = DefaultProjectRepositoryMock;
-            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, projectRepositoryMock.Object);
+            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, projectRepositoryMock.Object, DefaultProjectMapper);
             var result = await projectService.Edit(editContract, DefaultProjectModel.CustomerId);
             Assert.NotNull(result);
             Assert.Equal(editContract.Name, result.Name);
@@ -180,7 +190,7 @@ namespace Sconfig.Tests
                 Name = "ThisIsNewAndValidName"
             };
 
-            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object);
+            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object, DefaultProjectMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => projectService.Edit(contract, DefaultProjectModel.CustomerId));
             Assert.Equal(ProjectValidationCode.PROJECT_DOES_NOT_EXIST.ToString(), exception.Message);
         }
@@ -194,7 +204,7 @@ namespace Sconfig.Tests
                 Name = DefaultProjectModel.Name
             };
 
-            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object);
+            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object, DefaultProjectMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => projectService.Edit(contract, DefaultProjectModel.CustomerId));
             Assert.Equal(ProjectValidationCode.PROJECT_ALREADY_EXISTS.ToString(), exception.Message);
         }
@@ -208,7 +218,7 @@ namespace Sconfig.Tests
                 Name = "ThisIsNewAndValidName"
             };
 
-            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object);
+            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object, DefaultProjectMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => projectService.Edit(contract, "INVALID-CUSTOMER-NAME"));
             Assert.Equal(ProjectValidationCode.INVALID_PROJECT_OWNER.ToString(), exception.Message);
         }
@@ -225,7 +235,7 @@ namespace Sconfig.Tests
                 Name = name
             };
 
-            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object);
+            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object, DefaultProjectMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => projectService.Create(contract, DefaultProjectModel.CustomerId));
             Assert.Equal(ProjectValidationCode.INVALID_PROJECT_NAME.ToString(), exception.Message);
         }
@@ -234,7 +244,7 @@ namespace Sconfig.Tests
         public async Task Delete()
         {
             var projectRepositoryMock = DefaultProjectRepositoryMock;
-            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, projectRepositoryMock.Object);
+            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, projectRepositoryMock.Object, DefaultProjectMapper);
             await projectService.Delete(DefaultProjectModel.Id, DefaultProjectModel.CustomerId);
             projectRepositoryMock.Verify(m => m.Delete(It.Is<string>(p => p == DefaultProjectModel.Id)), Times.Once);
         }
@@ -250,7 +260,7 @@ namespace Sconfig.Tests
         [InlineData("PROJECT-ID", " ")]
         public async Task DeleteUsingEmptyIds(string projectId, string customerId)
         {
-            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object);
+            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object, DefaultProjectMapper);
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => projectService.Delete(projectId, customerId));
         }
 
@@ -259,7 +269,7 @@ namespace Sconfig.Tests
         [InlineData("P-TEST-PROJECT-1", "INVALID-CUSTOMER-ID", ProjectValidationCode.INVALID_PROJECT_OWNER)]
         public async Task DeleteInvalid(string projectId, string customerId, Enum exceptionMessage)
         {
-            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object);
+            var projectService = new ProjectService(DefaultProjectFactoryMock.Object, DefaultProjectRepositoryMock.Object, DefaultProjectMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => projectService.Delete(projectId, customerId));
             Assert.Equal(exceptionMessage.ToString(), exception.Message);
         }

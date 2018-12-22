@@ -7,43 +7,33 @@ using Sconfig.Interfaces.Repositories;
 
 namespace Sconfig.Configuration.Sql.Repositories
 {
-    class ConfigurationGroupRepository : AbstractSqlRespository<IConfigurationGroupModel, ConfigurationGroupModel>, IConfigurationGroupRepository
+    internal class ConfigurationGroupRepository : AbstractSqlRespository<IConfigurationGroupModel, ConfigurationGroupModel>, IConfigurationGroupRepository
     {
         public ConfigurationGroupRepository(ISconfigSqlConfiguration configuration) : base(configuration)
         {
         }
 
-        public async Task<IConfigurationGroupModel> GetByNameAndByCustomer(string name, string customerId)
+        public async Task<IConfigurationGroupModel> GetByNameAndByProject(string name, string projectId)
         {
             using (var db = GetClient())
             {
-                return await db.FirstOrDefaultAsync<ConfigurationGroupModel>($"SELECT TOP 1 * FROM [{TableName}] WHERE [Name] = @0 AND [CustomerId] = @1", name, customerId);
+                return await db.FirstOrDefaultAsync<ConfigurationGroupModel>($"SELECT * FROM [{TableName}] WHERE [Name] = @0 AND [ProjectId] = @1", name, projectId);
             }
-        }
-
-        public Task<IConfigurationGroupModel> GetByNameAndByProject(string name, string projectId)
-        {
-            throw new System.NotImplementedException();
         }
 
         public async Task<IEnumerable<IConfigurationGroupModel>> GetByParentGroup(string parentGroupId)
         {
             using (var db = GetClient())
             {
-                return await db.FetchAsync<ConfigurationGroupModel>($"SELECT * FROM [{TableName}] WHERE [ParentGroupId] = @0", parentGroupId);
+                return await db.FetchAsync<ConfigurationGroupModel>($"SELECT * FROM [{TableName}] WHERE [ParentId] = @0", parentGroupId);
             }
         }
 
-        public Task<IEnumerable<IConfigurationGroupModel>> GetRootLevelByProject(string projectId)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public async Task<IEnumerable<IConfigurationGroupModel>> GetWithoutParentGroupAndByCustomer(string customerId)
+        public async Task<IEnumerable<IConfigurationGroupModel>> GetRootLevelByProject(string projectId)
         {
             using (var db = GetClient())
             {
-                return await db.FetchAsync<ConfigurationGroupModel>($"SELECT * FROM [{TableName}] WHERE [ParentGroupId] IS NULL AND [CustomerId] = @0", customerId);
+                return await db.FetchAsync<ConfigurationGroupModel>($"SELECT * FROM [{TableName}] WHERE [ProjectId] = @0 AND [ParentId] IS NULL", projectId);
             }
         }
     }

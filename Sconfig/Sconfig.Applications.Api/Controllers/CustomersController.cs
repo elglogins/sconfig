@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Sconfig.Contracts.Customer;
 using Sconfig.Contracts.Customer.Reads;
+using Sconfig.Contracts.Customer.Writes;
 using Sconfig.Interfaces.Services;
-using System;
-using System.Threading.Tasks;
 
 namespace Sconfig.Applications.Api.Controllers
 {
@@ -18,6 +19,13 @@ namespace Sconfig.Applications.Api.Controllers
             _customerService = customerService;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<CustomerContract>>> GetAll()
+        {
+            var customerContracts = await _customerService.GetAll();
+            return Ok(customerContracts);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<CustomerContract>> Get(string id)
         {
@@ -29,15 +37,30 @@ namespace Sconfig.Applications.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CustomerContract>> Post([FromBody] CreateCustomerContract contract)
+        public async Task<ActionResult<CustomerContract>> Create([FromBody] CreateCustomerContract contract)
         {
-            if (contract == null)
-                return BadRequest();
-
-            if (String.IsNullOrEmpty(contract.Name))
-                return BadRequest();
-
             var customerContractResult = await _customerService.Create(contract);
+            return Ok(customerContractResult);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<CustomerContract>> Edit(string id, [FromBody] EditCustomerContract contract)
+        {
+            var customerContractResult = await _customerService.Edit(contract);
+            return Ok(customerContractResult);
+        }
+
+        [HttpPost("{id}/disable")]
+        public async Task<ActionResult<CustomerContract>> Disable(string id)
+        {
+            var customerContractResult = await _customerService.Disable(id);
+            return Ok(customerContractResult);
+        }
+
+        [HttpPost("{id}/enable")]
+        public async Task<ActionResult<CustomerContract>> Enable(string id)
+        {
+            var customerContractResult = await _customerService.Enable(id);
             return Ok(customerContractResult);
         }
     }

@@ -5,9 +5,10 @@ using Sconfig.Contracts.Environment.Enums;
 using Sconfig.Contracts.Environment.Writes;
 using Sconfig.Exceptions;
 using Sconfig.Interfaces.Factories;
+using Sconfig.Interfaces.Mapping;
 using Sconfig.Interfaces.Models;
 using Sconfig.Interfaces.Repositories;
-using Sconfig.Interfaces.Services;
+using Sconfig.Mapping;
 using Sconfig.Services;
 using Sconfig.Tests.Models;
 using Xunit;
@@ -44,6 +45,14 @@ namespace Sconfig.Tests
             }
         }
 
+        private IEnvironmentMapper DefaultEnvironmentMapper
+        {
+            get
+            {
+                return new EnvironmentMapper();
+            }
+        }
+
         private Mock<IEnvironmentRepository> DefaultEnvironmentRepositoryMock
         {
             get
@@ -77,7 +86,7 @@ namespace Sconfig.Tests
         [Fact]
         public void GetExisting()
         {
-            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
+            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object, DefaultEnvironmentMapper);
             var result = environmentService.Get(DefaultEnvironmentModel.Id, DefaultEnvironmentModel.ProjectId).Result;
 
             Assert.NotNull(result);
@@ -88,7 +97,7 @@ namespace Sconfig.Tests
         [Fact]
         public void GetForWrongOwnerProject()
         {
-            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
+            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object, DefaultEnvironmentMapper);
             var result = environmentService.Get(DefaultEnvironmentModel.Id, "NOT-OWNER-PROJECT-ID").Result;
             Assert.Null(result);
         }
@@ -96,7 +105,7 @@ namespace Sconfig.Tests
         [Fact]
         public void GetNotExisting()
         {
-            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
+            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object, DefaultEnvironmentMapper);
             var result = environmentService.Get("NOT-EXISTING-ENVIRONMENT-ID", DefaultEnvironmentModel.ProjectId).Result;
             Assert.Null(result);
         }
@@ -107,7 +116,7 @@ namespace Sconfig.Tests
         [InlineData(null, " ")]
         public void GetWithNullIdentifiers(string environmentId, string projectId)
         {
-            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
+            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object, DefaultEnvironmentMapper);
             var result = environmentService.Get(environmentId, projectId).Result;
             Assert.Null(result);
         }
@@ -124,7 +133,7 @@ namespace Sconfig.Tests
             };
 
             var environmentRepositoryMock = DefaultEnvironmentRepositoryMock;
-            var environmentService = new EnvironmentService(environmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
+            var environmentService = new EnvironmentService(environmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object, DefaultEnvironmentMapper);
             var result = environmentService.Create(contract).Result;
             Assert.NotNull(result);
             Assert.NotNull(result.Id);
@@ -142,7 +151,7 @@ namespace Sconfig.Tests
                 ProjectId = DefaultEnvironmentModel.ProjectId
             };
 
-            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
+            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object, DefaultEnvironmentMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => environmentService.Create(contract));
             Assert.Equal(EnvironmentValidationCode.ENVIRONMENT_ALREADY_EXISTS.ToString(), exception.Message);
         }
@@ -160,7 +169,7 @@ namespace Sconfig.Tests
                 ProjectId = DefaultEnvironmentModel.ProjectId
             };
 
-            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
+            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object, DefaultEnvironmentMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => environmentService.Create(contract));
             Assert.Equal(EnvironmentValidationCode.INVALID_ENVIRONMENT_NAME.ToString(), exception.Message);
         }
@@ -177,7 +186,7 @@ namespace Sconfig.Tests
             };
 
             var environmentRepositoryMock = DefaultEnvironmentRepositoryMock;
-            var environmentService = new EnvironmentService(environmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
+            var environmentService = new EnvironmentService(environmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object, DefaultEnvironmentMapper);
             var result = await environmentService.Edit(editContract, DefaultEnvironmentModel.ProjectId);
             Assert.NotNull(result);
             Assert.Equal(editContract.Name, result.Name);
@@ -193,7 +202,7 @@ namespace Sconfig.Tests
                 Name = "ThisIsNewAndValidName"
             };
 
-            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
+            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object, DefaultEnvironmentMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => environmentService.Edit(contract, DefaultEnvironmentModel.ProjectId));
             Assert.Equal(EnvironmentValidationCode.ENVIRONMENT_DOES_NOT_EXIST.ToString(), exception.Message);
         }
@@ -207,7 +216,7 @@ namespace Sconfig.Tests
                 Name = "ThisIsNewAndValidName"
             };
 
-            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
+            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object, DefaultEnvironmentMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => environmentService.Edit(contract, "INVALID-PROJECT-ID"));
             Assert.Equal(EnvironmentValidationCode.INVALID_ENVIRONMENT_PROJECT.ToString(), exception.Message);
         }
@@ -221,7 +230,7 @@ namespace Sconfig.Tests
                 Name = DefaultEnvironmentModel.Name
             };
 
-            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
+            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object, DefaultEnvironmentMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => environmentService.Edit(contract, DefaultEnvironmentModel.ProjectId));
             Assert.Equal(EnvironmentValidationCode.ENVIRONMENT_ALREADY_EXISTS.ToString(), exception.Message);
         }
@@ -239,7 +248,7 @@ namespace Sconfig.Tests
                 Id = DefaultEnvironmentModel.Id
             };
 
-            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
+            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object, DefaultEnvironmentMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => environmentService.Edit(contract, DefaultEnvironmentModel.ProjectId));
             Assert.Equal(EnvironmentValidationCode.INVALID_ENVIRONMENT_NAME.ToString(), exception.Message);
         }
@@ -249,7 +258,7 @@ namespace Sconfig.Tests
         public async Task Delete()
         {
             var environmentRepositoryMock = DefaultEnvironmentRepositoryMock;
-            var environmentService = new EnvironmentService(environmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
+            var environmentService = new EnvironmentService(environmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object, DefaultEnvironmentMapper);
             await environmentService.Delete(DefaultEnvironmentModel.Id, DefaultEnvironmentModel.ProjectId);
             environmentRepositoryMock.Verify(m => m.Delete(It.Is<string>(p => p == DefaultEnvironmentModel.Id)), Times.Once);
         }
@@ -265,7 +274,7 @@ namespace Sconfig.Tests
         [InlineData("ENVIRONMENT-ID", " ")]
         public async Task DeleteUsingEmptyIds(string environmentId, string projectId)
         {
-            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
+            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object, DefaultEnvironmentMapper);
             await Assert.ThrowsAsync<ArgumentNullException>(() => environmentService.Delete(environmentId, projectId));
         }
 
@@ -274,7 +283,7 @@ namespace Sconfig.Tests
         [InlineData("E-TEST-ENVIRONMENT-1", "INVALID-PROJECT-ID", EnvironmentValidationCode.INVALID_ENVIRONMENT_PROJECT)]
         public async Task DeleteInvalid(string environmentId, string projectId, Enum exceptionMessage)
         {
-            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object);
+            var environmentService = new EnvironmentService(DefaultEnvironmentRepositoryMock.Object, DefaultEnvironmentFactoryMock.Object, DefaultEnvironmentMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => environmentService.Delete(environmentId, projectId));
             Assert.Equal(exceptionMessage.ToString(), exception.Message);
         }

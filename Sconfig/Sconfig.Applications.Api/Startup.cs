@@ -31,10 +31,7 @@ namespace Sconfig.Applications.Api
                 ConnectionString = Configuration.GetConnectionString("ConfigurationConnection")
             });
             
-            // if to store users in sql
-            services.AddSConfigSqlCustomers();
-            // if to store configuration in sql
-            services.AddSConfigSqlConfiguration();
+            services.AddSConfigSql();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
