@@ -9,6 +9,7 @@ using Sconfig.Interfaces.Factories;
 using Sconfig.Interfaces.Models;
 using Sconfig.Interfaces.Repositories;
 using Sconfig.Interfaces.Services;
+using Sconfig.Mapping;
 
 namespace Sconfig.Services
 {
@@ -16,17 +17,16 @@ namespace Sconfig.Services
     {
         private readonly IConfigurationGroupRepository _configurationGroupRepository;
         private readonly IConfigurationGroupFactory _configurationGroupFactory;
+        private readonly IConfigurationGroupMapper _configurationGroupMapper;
 
         private const int MaxConfigurationGroupNameLength = 30;
         private const string IdentifierPrefix = "G-";
 
-        public ConfigurationGroupService(
-            IConfigurationGroupRepository configurationGroupRepository,
-            IConfigurationGroupFactory configurationGroupFactory
-            )
+        public ConfigurationGroupService(IConfigurationGroupRepository configurationGroupRepository, IConfigurationGroupFactory configurationGroupFactory, IConfigurationGroupMapper configurationGroupMapper)
         {
             _configurationGroupRepository = configurationGroupRepository;
             _configurationGroupFactory = configurationGroupFactory;
+            _configurationGroupMapper = configurationGroupMapper;
         }
 
         private async Task<int> GetSortingIndex(IConfigurationGroupModel parentGroup, string projectId)
@@ -84,7 +84,7 @@ namespace Sconfig.Services
             model.SortingIndex = sortingIndex ?? await GetSortingIndex(null, contract.ProjectId);
 
             await _configurationGroupRepository.Insert(model);
-            return Map(model);
+            return _configurationGroupMapper.Map(model);
         }
 
         public async Task Delete(string id, string projectId, string applicationId)
@@ -141,7 +141,7 @@ namespace Sconfig.Services
             group.Name = contract.Name;
             group.SortingIndex = contract.SortingIndex;
             group.ParentId = contract.ParentId;
-            return Map(_configurationGroupRepository.Save(group));
+            return _configurationGroupMapper.Map(_configurationGroupRepository.Save(group));
         }
 
         public async Task<ConfigurationGroupContract> Get(string id, string projectId, string applicationId)
@@ -162,24 +162,7 @@ namespace Sconfig.Services
             if (group.ApplicationId != applicationId)
                 return null;
 
-            return Map(group);
-        }
-
-        private ConfigurationGroupContract Map(IConfigurationGroupModel model)
-        {
-            if (model == null)
-                return null;
-
-            return new ConfigurationGroupContract
-            {
-                Id = model.Id,
-                Name = model.Name,
-                CreatedOn = model.CreatedOn,
-                ParentId = model.ParentId,
-                ApplicationId = model.ApplicationId,
-                ProjectId = model.ProjectId,
-                SortingIndex = model.SortingIndex
-            };
+            return _configurationGroupMapper.Map(group);
         }
     }
 }

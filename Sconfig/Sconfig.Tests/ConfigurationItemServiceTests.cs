@@ -9,6 +9,7 @@ using Sconfig.Interfaces.Factories;
 using Sconfig.Interfaces.Models;
 using Sconfig.Interfaces.Repositories;
 using Sconfig.Interfaces.Services;
+using Sconfig.Mapping;
 using Sconfig.Services;
 using Sconfig.Tests.Models;
 using Xunit;
@@ -76,7 +77,7 @@ namespace Sconfig.Tests
         private IConfigurationItemService InitConfigurationItemService(IConfigurationItemRepository repository,
            IConfigurationItemFactory factory)
         {
-            return new ConfigurationItemService(factory, repository);
+            return new ConfigurationItemService(factory, repository, new ConfigurationItemMapper());
         }
 
         #endregion

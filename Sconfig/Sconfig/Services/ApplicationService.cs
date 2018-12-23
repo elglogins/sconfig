@@ -5,7 +5,7 @@ using Sconfig.Contracts.Application.Reads;
 using Sconfig.Contracts.Application.Writes;
 using Sconfig.Exceptions;
 using Sconfig.Interfaces.Factories;
-using Sconfig.Interfaces.Models;
+using Sconfig.Interfaces.Mapping;
 using Sconfig.Interfaces.Repositories;
 using Sconfig.Interfaces.Services;
 
@@ -15,14 +15,16 @@ namespace Sconfig.Services
     {
         private readonly IApplicationRepository _applicationRepository;
         private readonly IApplicationFactory _applicationFactory;
+        private readonly IApplicationMapper _applicationMapper;
 
         private const int MaxApplicationNameLength = 50;
         private const string IdentifierPrefix = "A-";
 
-        public ApplicationService(IApplicationRepository applicationRepository, IApplicationFactory applicationFactory)
+        public ApplicationService(IApplicationRepository applicationRepository, IApplicationFactory applicationFactory, IApplicationMapper applicationMapper)
         {
             _applicationRepository = applicationRepository;
             _applicationFactory = applicationFactory;
+            _applicationMapper = applicationMapper;
         }
 
         public async Task<ApplicationContract> Create(CreateApplicationContract contract)
@@ -46,7 +48,7 @@ namespace Sconfig.Services
             model.ProjectId = contract.ProjectId;
             model.CreatedOn = DateTime.Now;
             await _applicationRepository.Insert(model);
-            return Map(model);
+            return _applicationMapper.Map(model);
         }
 
         public async Task Delete(string id, string projectId)
@@ -90,7 +92,7 @@ namespace Sconfig.Services
                 throw new ValidationCodeException(ApplicationValidationCodes.APPLICATION_ALREADY_EXISTS);
 
             environment.Name = contract.Name;
-            return Map(_applicationRepository.Save(environment));
+            return _applicationMapper.Map(_applicationRepository.Save(environment));
         }
 
         public async Task<ApplicationContract> Get(string id, string projectId)
@@ -99,20 +101,7 @@ namespace Sconfig.Services
             if (model == null || model.ProjectId != projectId)
                 return null;
 
-            return Map(model);
-        }
-
-        private ApplicationContract Map(IApplicationModel model)
-        {
-            if (model == null)
-                return null;
-
-            return new ApplicationContract
-            {
-                Id = model.Id,
-                Name = model.Name,
-                CreatedOn = model.CreatedOn
-            };
+            return _applicationMapper.Map(model);
         }
     }
 }

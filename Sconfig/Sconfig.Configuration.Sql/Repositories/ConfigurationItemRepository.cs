@@ -13,6 +13,14 @@ namespace Sconfig.Configuration.Sql.Repositories
         {
         }
 
+        public async Task<IEnumerable<IConfigurationItemModel>> GetByApplication(string projectId, string applicationId)
+        {
+            using (var db = GetClient())
+            {
+                return await db.FetchAsync<ConfigurationItemModel>($"SELECT * FROM {TableName} WHERE [ProjectId] = @0 AND [ApplicationId] = @1", projectId, applicationId);
+            }
+        }
+
         public async Task<IEnumerable<IConfigurationItemModel>> GetByName(string name, string projectId, string applicationId, string parentId)
         {
             var sql = string.Format(@"
@@ -30,7 +38,7 @@ namespace Sconfig.Configuration.Sql.Repositories
 
             using (var db = GetClient())
             {
-                return await db.QueryAsync<ConfigurationItemModel>(sql, name, projectId, applicationId, parentId);
+                return await db.FetchAsync<ConfigurationItemModel>(sql, name, projectId, applicationId, parentId);
             }
         }
 
@@ -49,7 +57,15 @@ namespace Sconfig.Configuration.Sql.Repositories
 
             using (var db = GetClient())
             {
-                return await db.QueryAsync<ConfigurationItemModel>(sql, projectId, parentId, applicationId);
+                return await db.FetchAsync<ConfigurationItemModel>(sql, projectId, parentId, applicationId);
+            }
+        }
+
+        public async Task<IEnumerable<IConfigurationItemModel>> GetByProject(string projectId)
+        {
+            using (var db = GetClient())
+            {
+                return await db.FetchAsync<ConfigurationItemModel>($"SELECT * FROM {TableName} WHERE [ProjectId] = @0", projectId);
             }
         }
 
@@ -57,7 +73,7 @@ namespace Sconfig.Configuration.Sql.Repositories
         {
             using (var db = GetClient())
             {
-                return await db.QueryAsync<ConfigurationItemModel>($"SELECT * FROM {TableName} WHERE [ApplicationId] = @0", applicationId);
+                return await db.FetchAsync<ConfigurationItemModel>($"SELECT * FROM {TableName} WHERE [ApplicationId] = @0", applicationId);
             }
         }
 
@@ -65,7 +81,7 @@ namespace Sconfig.Configuration.Sql.Repositories
         {
             using (var db = GetClient())
             {
-                return await db.QueryAsync<ConfigurationItemModel>($"SELECT * FROM {TableName} WHERE [ProjectId] = @0", projectId);
+                return await db.FetchAsync<ConfigurationItemModel>($"SELECT * FROM {TableName} WHERE [ProjectId] = @0", projectId);
             }
         }
     }

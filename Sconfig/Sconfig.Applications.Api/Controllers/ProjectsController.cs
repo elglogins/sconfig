@@ -47,7 +47,7 @@ namespace Sconfig.Applications.Api.Controllers
 
         [HttpDelete]
         [Route("api/Customers/{customerId}/Projects/{id}")]
-        public async Task<ActionResult<ProjectContract>> Delete(string customerId, string id)
+        public async Task<ActionResult> Delete(string customerId, string id)
         {
             await _projectService.Delete(id, customerId);
             return Ok();

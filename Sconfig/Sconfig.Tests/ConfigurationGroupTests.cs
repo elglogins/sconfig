@@ -5,6 +5,7 @@ using Sconfig.Contracts.Configuration.ConfigurationGroup.Writes;
 using Sconfig.Contracts.Configuration.Enums;
 using Sconfig.Exceptions;
 using Sconfig.Interfaces.Factories;
+using Sconfig.Interfaces.Mapping;
 using Sconfig.Interfaces.Models;
 using Sconfig.Interfaces.Repositories;
 using Sconfig.Interfaces.Services;
@@ -115,7 +116,7 @@ namespace Sconfig.Tests
         private IConfigurationGroupService InitConfigurationGroupService(IConfigurationGroupRepository repository,
             IConfigurationGroupFactory factory)
         {
-            return new ConfigurationGroupService(repository, factory);
+            return new ConfigurationGroupService(repository, factory, new ConfigurationGroupMapper());
         }
 
         #endregion

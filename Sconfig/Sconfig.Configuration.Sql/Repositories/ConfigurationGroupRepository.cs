@@ -13,6 +13,14 @@ namespace Sconfig.Configuration.Sql.Repositories
         {
         }
 
+        public async Task<IEnumerable<IConfigurationGroupModel>> GetByApplication(string projectId, string applicationId)
+        {
+            using(var db = GetClient())
+            {
+                return await db.FetchAsync<ConfigurationGroupModel>($"SELECT * FROM [{TableName}] WHERE [ApplicationId] = @0 AND [ProjectId] = @1", applicationId, projectId);
+            }
+        }
+
         public async Task<IConfigurationGroupModel> GetByNameAndByProject(string name, string projectId)
         {
             using (var db = GetClient())
@@ -26,6 +34,14 @@ namespace Sconfig.Configuration.Sql.Repositories
             using (var db = GetClient())
             {
                 return await db.FetchAsync<ConfigurationGroupModel>($"SELECT * FROM [{TableName}] WHERE [ParentId] = @0", parentGroupId);
+            }
+        }
+
+        public async Task<IEnumerable<IConfigurationGroupModel>> GetByProject(string projectId)
+        {
+            using (var db = GetClient())
+            {
+                return await db.FetchAsync<ConfigurationGroupModel>($"SELECT * FROM [{TableName}] WHERE [ProjectId] = @0", projectId);
             }
         }
 

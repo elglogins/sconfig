@@ -6,7 +6,7 @@ using Sconfig.Contracts.Configuration.ConfigurationItem.Reads;
 using Sconfig.Contracts.Configuration.ConfigurationItem.Writes;
 using Sconfig.Exceptions;
 using Sconfig.Interfaces.Factories;
-using Sconfig.Interfaces.Models;
+using Sconfig.Interfaces.Mapping;
 using Sconfig.Interfaces.Repositories;
 using Sconfig.Interfaces.Services;
 
@@ -16,14 +16,16 @@ namespace Sconfig.Services
     {
         private readonly IConfigurationItemFactory _configurationItemFactory;
         private readonly IConfigurationItemRepository _configurationItemRepository;
+        private readonly IConfigurationItemMapper _configurationItemMapper;
 
         private const int MaxConfigurationItemNameLength = 30;
         private const string IdentifierPrefix = "I-";
 
-        public ConfigurationItemService(IConfigurationItemFactory configurationItemFactory, IConfigurationItemRepository configurationItemRepository)
+        public ConfigurationItemService(IConfigurationItemFactory configurationItemFactory, IConfigurationItemRepository configurationItemRepository, IConfigurationItemMapper configurationItemMapper)
         {
             _configurationItemFactory = configurationItemFactory;
             _configurationItemRepository = configurationItemRepository;
+            _configurationItemMapper = configurationItemMapper;
         }
 
         public async Task<ConfigurationItemContract> Create(CreateConfigurationItemContract contract)
@@ -66,11 +68,12 @@ namespace Sconfig.Services
             model.ApplicationId = contract.ApplicationId;
             model.CreatedOn = DateTime.Now;
             model.ProjectId = contract.ProjectId;
+            model.Value = contract.Value;
             model.EnvironmentId = contract.EnvironmentId;
             model.SortingIndex = sortingIndex ?? 0;
 
             await _configurationItemRepository.Insert(model);
-            return Map(model);
+            return _configurationItemMapper.Map(model);
         }
 
         public async Task Delete(string id, string projectId, string applicationId, string environmentId)
@@ -121,8 +124,8 @@ namespace Sconfig.Services
                 throw new ValidationCodeException(ConfigurationItemValidationCodes.INVALID_CONFIGURATION_ITEM_PROJECT);
 
             var existingItems = await _configurationItemRepository.GetByName(contract.Name, contract.ProjectId, contract.ApplicationId, contract.ParentId);
-            
-            if (existingItems.Where(c=>c.Id != contract.Id).Any())
+
+            if (existingItems.Where(c => c.Id != contract.Id).Any())
                 throw new ValidationCodeException(ConfigurationItemValidationCodes.CONFIGURATION_ITEM_ALREADY_EXISTS);
 
             item.Name = contract.Name;
@@ -132,7 +135,7 @@ namespace Sconfig.Services
             item.ParentId = contract.ParentId;
             item.Value = contract.Value;
 
-            return Map(_configurationItemRepository.Save(item));
+            return _configurationItemMapper.Map(_configurationItemRepository.Save(item));
         }
 
         public async Task<ConfigurationItemContract> Get(string id, string projectId, string applicationId, string environmentId)
@@ -156,26 +159,7 @@ namespace Sconfig.Services
             if (group.EnvironmentId != environmentId)
                 return null;
 
-            return Map(group);
-        }
-
-        private ConfigurationItemContract Map(IConfigurationItemModel model)
-        {
-            if (model == null)
-                return null;
-
-            return new ConfigurationItemContract()
-            {
-                Id = model.Id,
-                Name = model.Name,
-                ApplicationId = model.ApplicationId,
-                CreatedOn = model.CreatedOn,
-                EnvironmentId = model.EnvironmentId,
-                ParentId = model.ParentId,
-                ProjectId = model.ProjectId,
-                SortingIndex = model.SortingIndex,
-                Value = model.Value
-            };
+            return _configurationItemMapper.Map(group);
         }
     }
 }

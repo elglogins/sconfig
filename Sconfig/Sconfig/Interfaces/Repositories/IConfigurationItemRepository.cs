@@ -11,7 +11,9 @@ namespace Sconfig.Interfaces.Repositories
         Task<IEnumerable<IConfigurationItemModel>> GetByParent(string parentId, string projectId, string applicationId);
 
         Task<IEnumerable<IConfigurationItemModel>> GetRootLevelByProject(string projectId);
+        Task<IEnumerable<IConfigurationItemModel>> GetByProject(string projectId);
 
         Task<IEnumerable<IConfigurationItemModel>> GetRootLevelByApplication(string applicationId);
+        Task<IEnumerable<IConfigurationItemModel>> GetByApplication(string projectId, string applicationId);
     }
 }

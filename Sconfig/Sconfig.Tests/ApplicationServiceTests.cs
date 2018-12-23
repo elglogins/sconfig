@@ -5,8 +5,10 @@ using Sconfig.Contracts.Application.Enums;
 using Sconfig.Contracts.Application.Writes;
 using Sconfig.Exceptions;
 using Sconfig.Interfaces.Factories;
+using Sconfig.Interfaces.Mapping;
 using Sconfig.Interfaces.Models;
 using Sconfig.Interfaces.Repositories;
+using Sconfig.Mapping;
 using Sconfig.Services;
 using Sconfig.Tests.Models;
 using Xunit;
@@ -43,6 +45,14 @@ namespace Sconfig.Tests
             }
         }
 
+        private IApplicationMapper DefaultApplicationMapper
+        {
+            get
+            {
+                return new ApplicationMapper();
+            }
+        }
+
         private Mock<IApplicationRepository> DefaultApplicationRepositoryMock
         {
             get
@@ -76,7 +86,7 @@ namespace Sconfig.Tests
         [Fact]
         public void GetExisting()
         {
-            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object);
+            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object, DefaultApplicationMapper);
             var result = applicationService.Get(DefaultApplicationModel.Id, DefaultApplicationModel.ProjectId).Result;
 
             Assert.NotNull(result);
@@ -87,7 +97,7 @@ namespace Sconfig.Tests
         [Fact]
         public void GetForWrongOwnerProject()
         {
-            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object);
+            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object, DefaultApplicationMapper);
             var result = applicationService.Get(DefaultApplicationModel.Id, "NOT-OWNER-PROJECT-ID").Result;
             Assert.Null(result);
         }
@@ -95,7 +105,7 @@ namespace Sconfig.Tests
         [Fact]
         public void GetNotExisting()
         {
-            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object);
+            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object, DefaultApplicationMapper);
             var result = applicationService.Get("NOT-EXISTING-APPLICATION-ID", DefaultApplicationModel.ProjectId).Result;
             Assert.Null(result);
         }
@@ -106,7 +116,7 @@ namespace Sconfig.Tests
         [InlineData(null, " ")]
         public void GetWithNullIdentifiers(string appicationId, string projectId)
         {
-            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object);
+            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object, DefaultApplicationMapper);
             var result = applicationService.Get(appicationId, projectId).Result;
             Assert.Null(result);
         }
@@ -123,7 +133,7 @@ namespace Sconfig.Tests
             };
 
             var applicationRepositoryMock = DefaultApplicationRepositoryMock;
-            var applicationService = new ApplicationService(applicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object);
+            var applicationService = new ApplicationService(applicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object, DefaultApplicationMapper);
             var result = applicationService.Create(contract).Result;
             Assert.NotNull(result);
             Assert.NotNull(result.Id);
@@ -141,7 +151,7 @@ namespace Sconfig.Tests
                 ProjectId = DefaultApplicationModel.ProjectId
             };
 
-            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object);
+            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object, DefaultApplicationMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => applicationService.Create(contract));
             Assert.Equal(ApplicationValidationCodes.APPLICATION_ALREADY_EXISTS.ToString(), exception.Message);
         }
@@ -159,7 +169,7 @@ namespace Sconfig.Tests
                 ProjectId = DefaultApplicationModel.ProjectId
             };
 
-            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object);
+            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object, DefaultApplicationMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => applicationService.Create(contract));
             Assert.Equal(ApplicationValidationCodes.INVALID_APPLICATION_NAME.ToString(), exception.Message);
         }
@@ -176,7 +186,7 @@ namespace Sconfig.Tests
             };
 
             var applicationRepositoryMock = DefaultApplicationRepositoryMock;
-            var applicationService = new ApplicationService(applicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object);
+            var applicationService = new ApplicationService(applicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object, DefaultApplicationMapper);
             var result = await applicationService.Edit(editContract, DefaultApplicationModel.ProjectId);
             Assert.NotNull(result);
             Assert.Equal(editContract.Name, result.Name);
@@ -192,7 +202,7 @@ namespace Sconfig.Tests
                 Name = "ThisIsNewAndValidName"
             };
 
-            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object);
+            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object, DefaultApplicationMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => applicationService.Edit(contract, DefaultApplicationModel.ProjectId));
             Assert.Equal(ApplicationValidationCodes.APPLICATION_DOES_NOT_EXIST.ToString(), exception.Message);
         }
@@ -206,7 +216,7 @@ namespace Sconfig.Tests
                 Name = "ThisIsNewAndValidName"
             };
 
-            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object);
+            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object, DefaultApplicationMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => applicationService.Edit(contract, "INVALID-PROJECT-ID"));
             Assert.Equal(ApplicationValidationCodes.INVALID_APPLICATION_PROJECT.ToString(), exception.Message);
         }
@@ -220,7 +230,7 @@ namespace Sconfig.Tests
                 Name = DefaultApplicationModel.Name
             };
 
-            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object);
+            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object, DefaultApplicationMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => applicationService.Edit(contract, DefaultApplicationModel.ProjectId));
             Assert.Equal(ApplicationValidationCodes.APPLICATION_ALREADY_EXISTS.ToString(), exception.Message);
         }
@@ -238,7 +248,7 @@ namespace Sconfig.Tests
                 Id = DefaultApplicationModel.Id
             };
 
-            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object);
+            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object, DefaultApplicationMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => applicationService.Edit(contract, DefaultApplicationModel.ProjectId));
             Assert.Equal(ApplicationValidationCodes.INVALID_APPLICATION_NAME.ToString(), exception.Message);
         }
@@ -247,7 +257,7 @@ namespace Sconfig.Tests
         public async Task Delete()
         {
             var applicationRepositoryMock = DefaultApplicationRepositoryMock;
-            var applicationService = new ApplicationService(applicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object);
+            var applicationService = new ApplicationService(applicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object, DefaultApplicationMapper);
             await applicationService.Delete(DefaultApplicationModel.Id, DefaultApplicationModel.ProjectId);
             applicationRepositoryMock.Verify(m => m.Delete(It.Is<string>(p => p == DefaultApplicationModel.Id)), Times.Once);
         }
@@ -263,7 +273,7 @@ namespace Sconfig.Tests
         [InlineData("APPLICATION-ID", " ")]
         public async Task DeleteUsingEmptyIds(string applicationId, string projectId)
         {
-            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object);
+            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object, DefaultApplicationMapper);
             await Assert.ThrowsAsync<ArgumentNullException>(() => applicationService.Delete(applicationId, projectId));
         }
 
@@ -272,7 +282,7 @@ namespace Sconfig.Tests
         [InlineData("A-TEST-APPLICATION-1", "INVALID-PROJECT-ID", ApplicationValidationCodes.INVALID_APPLICATION_PROJECT)]
         public async Task DeleteInvalid(string applicationId, string projectId, Enum exceptionMessage)
         {
-            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object);
+            var applicationService = new ApplicationService(DefaultApplicationRepositoryMock.Object, DefaultApplicationFactoryMock.Object, DefaultApplicationMapper);
             var exception = await Assert.ThrowsAsync<ValidationCodeException>(() => applicationService.Delete(applicationId, projectId));
             Assert.Equal(exceptionMessage.ToString(), exception.Message);
         }

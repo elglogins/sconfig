@@ -15,12 +15,16 @@ namespace Sconfig.Extensions
             collection.AddTransient<IProjectService, ProjectService>();
             collection.AddTransient<IEnvironmentService, EnvironmentService>();
             collection.AddTransient<IConfigurationGroupService, ConfigurationGroupService>();
+            collection.AddTransient<IApplicationService, ApplicationService>();
             collection.AddTransient<IConfigurationItemService, ConfigurationItemService>();
 
             // mapping
             collection.AddTransient<ICustomerMapper, CustomerMapper>();
             collection.AddTransient<IProjectMapper, ProjectMapper>();
             collection.AddTransient<IEnvironmentMapper, EnvironmentMapper>();
+            collection.AddTransient<IConfigurationItemMapper, ConfigurationItemMapper>();
+            collection.AddTransient<IApplicationMapper, ApplicationMapper>();
+            collection.AddTransient<IConfigurationGroupMapper, ConfigurationGroupMapper>();
         }
     }
 }

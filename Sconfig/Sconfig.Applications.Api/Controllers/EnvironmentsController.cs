@@ -49,7 +49,7 @@ namespace Sconfig.Applications.Api.Controllers
             return Ok(response);
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("api/Projects/{projectId}/Environments/{id}")]
         public async Task<ActionResult<EnvironmentContract>> Edit(string projectId, string id, [FromBody]EditEnvironmentContract contract)
         {
@@ -59,7 +59,7 @@ namespace Sconfig.Applications.Api.Controllers
 
         [HttpDelete]
         [Route("api/Projects/{projectId}/Environments/{id}")]
-        public async Task<ActionResult<EnvironmentContract>> Delete(string projectId, string id)
+        public async Task<ActionResult> Delete(string projectId, string id)
         {
             await _environmentService.Delete(id, projectId);
             return Ok();
