@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Sconfig.Contracts.Aggregation\Sconfig.Contracts.Aggregation.csproj" />
     <ProjectReference Include="..\Sconfig.Contracts.Application\Sconfig.Contracts.Application.csproj" />
     <ProjectReference Include="..\Sconfig.Contracts.Configuration\Sconfig.Contracts.Configuration.csproj" />
     <ProjectReference Include="..\Sconfig.Contracts.Customer\Sconfig.Contracts.Customer.csproj" />

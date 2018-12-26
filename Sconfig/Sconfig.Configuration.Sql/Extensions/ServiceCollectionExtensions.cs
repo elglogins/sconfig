@@ -25,8 +25,12 @@ namespace Sconfig.Configuration.Sql.Extensions
 
         public static void AddSConfigSqlCustomers(this IServiceCollection collection)
         {
+            // repositories
             collection.AddSingleton<ICustomerRepository, CustomerRepository>();
+
+            // factories & services
             collection.AddTransient<ICustomerFactory, CustomerFactory>();
+            collection.AddTransient<IAggregationFactory, AggregationFactory>();
         }
 
         public static void AddSConfigSqlConfigurationGroupsAndItems(this IServiceCollection collection)

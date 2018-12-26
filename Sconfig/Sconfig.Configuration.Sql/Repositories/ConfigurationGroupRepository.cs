@@ -41,7 +41,7 @@ namespace Sconfig.Configuration.Sql.Repositories
         {
             using (var db = GetClient())
             {
-                return await db.FetchAsync<ConfigurationGroupModel>($"SELECT * FROM [{TableName}] WHERE [ProjectId] = @0", projectId);
+                return await db.FetchAsync<ConfigurationGroupModel>($"SELECT * FROM [{TableName}] WHERE [ProjectId] = @0 AND [ApplicationId] IS NULL", projectId);
             }
         }
 

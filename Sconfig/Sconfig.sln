@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sconfig.Contracts.Applicati
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sconfig.Applications.Api", "Sconfig.Applications.Api\Sconfig.Applications.Api.csproj", "{4F317878-1716-450B-9CB6-E38077ABD985}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sconfig.Contracts.Aggregation", "Sconfig.Contracts.Aggregation\Sconfig.Contracts.Aggregation.csproj", "{559F9194-3E5B-48F3-A8FB-28483FC56005}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{4F317878-1716-450B-9CB6-E38077ABD985}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F317878-1716-450B-9CB6-E38077ABD985}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F317878-1716-450B-9CB6-E38077ABD985}.Release|Any CPU.Build.0 = Release|Any CPU
+		{559F9194-3E5B-48F3-A8FB-28483FC56005}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{559F9194-3E5B-48F3-A8FB-28483FC56005}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{559F9194-3E5B-48F3-A8FB-28483FC56005}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{559F9194-3E5B-48F3-A8FB-28483FC56005}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,6 +90,7 @@ Global
 		{5665AEE9-22DF-4946-943A-D43DAEFB839B} = {E5A3F2A4-8AFA-4128-92DF-97647D6EBD94}
 		{1CE3EB2B-066A-4600-8B4F-7C2AF8939773} = {E5A3F2A4-8AFA-4128-92DF-97647D6EBD94}
 		{4F317878-1716-450B-9CB6-E38077ABD985} = {A5F85F6E-5E86-41B7-938D-7F8496809573}
+		{559F9194-3E5B-48F3-A8FB-28483FC56005} = {E5A3F2A4-8AFA-4128-92DF-97647D6EBD94}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7DACC0E8-A4CA-4A83-AE2C-9BF2D507371F}
